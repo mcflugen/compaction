@@ -33,8 +33,15 @@ install:
 - conda install python=$TRAVIS_PYTHON_VERSION
 - conda install -q conda-build anaconda-client coverage sphinx
 script:
-- conda build ./conda-recipe -c csdms-stack -c conda-forge
+- conda build ./conda-recipe -c conda-forge --no-test
+- conda install compaction nose coverage --use-local
+- nosetests --detailed-errors --with-doctest --with-coverage --cover-package=compaction --verbosity=2 compaction
 after_success:
+- |
+  if [[ $TRAVIS_OS_NAME == "linux" ]]; then
+    conda install -q coveralls -c conda-forge
+    coveralls --verbose
+  fi
 - curl https://raw.githubusercontent.com/csdms/ci-tools/master/anaconda_upload.py
   > $HOME/anaconda_upload.py
 - echo $ANACONDA_TOKEN | python $HOME/anaconda_upload.py ./conda-recipe --channel=main
