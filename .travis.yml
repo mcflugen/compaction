@@ -4,8 +4,8 @@ os:
 - osx
 env:
   matrix:
-  - TRAVIS_PYTHON_VERSION="2.7"
-  - TRAVIS_PYTHON_VERSION="3.5"
+  - TRAVIS_PYTHON_VERSION="2.7" COVERALLS=1
+  - TRAVIS_PYTHON_VERSION="3.5" COVERALLS=0
   global:
   - CONDA_PREFIX=$HOME/miniconda
   - MINICONDA_URL_BASE="https://repo.continuum.io/miniconda/Miniconda3-latest"
@@ -38,7 +38,7 @@ script:
 - nosetests --detailed-errors --with-doctest --with-coverage --cover-package=compaction --verbosity=2 compaction
 after_success:
 - |
-  if [[ $TRAVIS_OS_NAME == "linux" ]]; then
+  if [[ "$COVERALLS" == "1" && "$TRAVIS_OS_NAME" == "linux" ]]; then
     conda install -q coveralls -c conda-forge
     coveralls --verbose
   fi
