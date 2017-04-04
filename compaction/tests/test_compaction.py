@@ -159,7 +159,7 @@ def test_cli():
         proc = subprocess.Popen(['compact', '-', '-', '--config=%s' % fp.name],
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-        (output, err) = proc.communicate(input=input.getvalue())
+        (output, err) = proc.communicate(input=str.encode(input.getvalue()))
         data = pandas.read_csv(StringIO(output), names=('dz', 'porosity'))
 
     assert_array_almost_equal(data.porosity, phi_1)
