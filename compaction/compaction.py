@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+import sys
+
 import numpy as np
 import pandas
 from scipy.constants import g as gravity
@@ -47,13 +49,13 @@ def compact(dz, porosity, c=5e-8, rho_grain=2650., excess_pressure=0.,
     return np.minimum(porosity_new, porosity, out=porosity_new)
 
 
-def load_config(fname=None):
+def load_config(file=None):
     """Load compaction config file.
 
     Parameters
     ----------
-    fname : str, optional
-        Name of config file or ``None``. If ``None``, return default
+    fname : file-like, optional
+        Opened config file or ``None``. If ``None``, return default
         values.
 
     Returns
@@ -62,16 +64,30 @@ def load_config(fname=None):
         Config parameters.
     """
     conf = {
-        'c': 3.68e-8,
+        'c': 5e-8,
         'porosity_min': 0.,
-        'porosity_max': .4,
+        'porosity_max': 1.,
         'rho_grain': 2650.,
         'rho_void': 1000.,
     }
-    if fname is not None:
-        with open(fname, 'r') as fp:
-            conf.update(yaml.load(fp))
+    if file is not None:
+        conf.update(yaml.load(file))
     return conf
+
+
+def run_compaction(input=None, output=None, **kwds):
+    input = input or sys.stdin
+    output = output or sys.stdout
+
+    init = pandas.read_csv(input, names=('dz', 'porosity'), dtype=float)
+
+    porosity_new = compact(init.dz.values, init.porosity.values, **kwds)
+
+    dz_new = init.dz * (1 - init.porosity) / (1 - porosity_new)
+
+    out = pandas.DataFrame.from_items(
+        [('dz', dz_new), ('porosity', porosity_new)])
+    out.to_csv(output, index=False, header=False)
 
 
 def main():
@@ -86,16 +102,12 @@ def main():
 
     args = parser.parse_args()
 
-    conf = load_config(args.config)
-    init = pandas.read_csv(args.input, names=('dz', 'porosity'), dtype=float)
+    config = load_config()
+    if args.config:
+        with open(args.config, 'r') as fp:
+            config = load_config(args.config)
 
-    porosity_new = compact(init.dz.values, init.porosity.values, **conf)
-
-    dz_new = init.dz * (1 - init.porosity) / (1 - porosity_new)
-
-    out = pandas.DataFrame.from_items(
-        [('dz', dz_new), ('porosity', porosity_new)])
-    out.to_csv(args.output, index=False, header=False)
+    run_compaction(args.input, args.output, **config)
 
 
 if __name__ == '__main__':
