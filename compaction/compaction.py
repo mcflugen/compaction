@@ -2,7 +2,6 @@
 import numpy as np
 import pandas
 from scipy.constants import g as gravity
-
 import yaml
 
 
