@@ -1,6 +1,8 @@
 """Unit tests for compaction."""
+import os
 import tempfile
 import subprocess
+import shutil
 
 import pandas
 import numpy as np
@@ -150,16 +152,19 @@ def test_cli():
     phi_0 = np.full(100, .5)
     phi_1 = compact(dz_0, phi_0, porosity_max=.5)
 
-    input = StringIO()
-    df = pandas.DataFrame.from_items([('dz', dz_0), ('porosity', phi_0)])
-    df.to_csv(input, index=False, header=False)
+    tmpdir = tempfile.mkdtemp()
+    os.chdir(tmpdir)
 
-    with tempfile.NamedTemporaryFile(mode='w+') as fp:
+    df = pandas.DataFrame.from_items([('dz', dz_0), ('porosity', phi_0)])
+    df.to_csv('porosity_in.csv', index=False, header=False)
+
+    with open('config.yaml', 'w') as fp:
         yaml.dump(dict(porosity_max=.5), fp)
-        proc = subprocess.Popen(['compact', '-', '-', '--config=%s' % fp.name],
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE)
-        (output, err) = proc.communicate(input=str.encode(input.getvalue()))
-        data = pandas.read_csv(StringIO(output), names=('dz', 'porosity'))
+
+    subprocess.check_call(['compact', 'porosity_in.csv', 'porosity_out.csv',
+                           '--config=config.yaml'])
+    data = pandas.read_csv('porosity_out.csv', names=('dz', 'porosity'))
+
+    shutil.rmtree(tmpdir)
 
     assert_array_almost_equal(data.porosity, phi_1)
