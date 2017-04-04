@@ -35,8 +35,7 @@ install:
 script:
 - conda build ./conda-recipe -c conda-forge
 - conda install compaction nose coverage six --use-local -c conda-forge
-- nosetests --detailed-errors --with-doctest --with-coverage \ --cover-package=compaction
-  --verbosity=2 compaction
+- nosetests --detailed-errors --with-doctest --with-coverage --cover-package=compaction --verbosity=2 compaction
 after_success:
 - |
   if [[ "$COVERALLS" == "1" && "$TRAVIS_OS_NAME" == "linux" ]]; then
