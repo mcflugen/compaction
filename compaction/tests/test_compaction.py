@@ -154,7 +154,7 @@ def test_cli():
     df = pandas.DataFrame.from_items([('dz', dz_0), ('porosity', phi_0)])
     df.to_csv(input, index=False, header=False)
 
-    with tempfile.NamedTemporaryFile() as fp:
+    with tempfile.NamedTemporaryFile(mode='w+') as fp:
         yaml.dump(dict(porosity_max=.5), fp)
         proc = subprocess.Popen(['compact', '-', '-', '--config=%s' % fp.name],
                                 stdin=subprocess.PIPE,
