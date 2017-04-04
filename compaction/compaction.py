@@ -105,10 +105,6 @@ def main():
     config = load_config()
     if args.config:
         with open(args.config, 'r') as fp:
-            config = load_config(args.config)
+            config = load_config(fp)
 
     run_compaction(args.input, args.output, **config)
-
-
-if __name__ == '__main__':
-    main()
