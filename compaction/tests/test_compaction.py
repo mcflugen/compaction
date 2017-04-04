@@ -1,4 +1,7 @@
 """Unit tests for compaction."""
+import tempfile
+import subprocess
+
 import pandas
 import numpy as np
 from numpy.testing import (assert_array_less, assert_array_equal,
@@ -137,5 +140,26 @@ def test_run():
     output.seek(0)
 
     data = pandas.read_csv(output, names=('dz', 'porosity'), dtype=float)
+
+    assert_array_almost_equal(data.porosity, phi_1)
+
+
+def test_cli():
+    """Test the compaction command-line interface."""
+    dz_0 = np.full(100, 1.)
+    phi_0 = np.full(100, .5)
+    phi_1 = compact(dz_0, phi_0, porosity_max=.5)
+
+    input = StringIO()
+    df = pandas.DataFrame.from_items([('dz', dz_0), ('porosity', phi_0)])
+    df.to_csv(input, index=False, header=False)
+
+    with tempfile.NamedTemporaryFile() as fp:
+        yaml.dump(dict(porosity_max=.5), fp)
+        proc = subprocess.Popen(['compact', '-', '-', '--config=%s' % fp.name],
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
+        (output, err) = proc.communicate(input=input.getvalue())
+        data = pandas.read_csv(StringIO(output), names=('dz', 'porosity'))
 
     assert_array_almost_equal(data.porosity, phi_1)
