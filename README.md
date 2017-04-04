@@ -1,9 +1,11 @@
 [![Build
 Status](https://travis-ci.org/mcflugen/compaction.svg?branch=master)](https://travis-ci.org/mcflugen/compaction)
 
+[![Coverage
+Status](https://coveralls.io/repos/github/mcflugen/compaction/badge.svg?branch=mcflugen%2Fadd-unit-tests)](https://coveralls.io/github/mcflugen/compaction?branch=mcflugen%2Fadd-unit-tests)
+
 [![Anaconda-Server
 Badge](https://anaconda.org/csdms/compaction/badges/version.svg)](https://anaconda.org/csdms/compaction)
-
 # compaction
 
 Compact a column of sediment based on the Bahr et al., 2001.
