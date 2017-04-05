@@ -1,3 +1,3 @@
-from .compaction import compact
+from .compaction import compact, load_config
 
-__all__ = ['compact', ]
+__all__ = ['compact', 'load_config']
