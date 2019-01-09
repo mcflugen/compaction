@@ -4,8 +4,7 @@ import yaml
 from ._version import get_versions
 from .compaction import load_config, run_compaction
 
-
-__version__ = get_versions()['version']
+__version__ = get_versions()["version"]
 del get_versions
 
 
@@ -15,7 +14,9 @@ del get_versions
     "-v", "--verbose", is_flag=True, help="Also emit status messages to stderr."
 )
 @click.option("--dry-run", is_flag=True, help="do not actually run the model")
-@click.option("--config", default=None, type=click.File(mode="r"), help="Configuration file")
+@click.option(
+    "--config", default=None, type=click.File(mode="r"), help="Configuration file"
+)
 @click.argument("input", type=click.File(mode="r"))
 @click.argument("output", default="-", type=click.File(mode="w"))
 def main(input, output, config, dry_run, verbose):
