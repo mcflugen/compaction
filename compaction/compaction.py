@@ -87,23 +87,3 @@ def run_compaction(input=None, output=None, **kwds):
 
     out = pandas.DataFrame.from_dict({'dz': dz_new, 'porosity': porosity_new})
     out.to_csv(output, index=False, header=False)
-
-
-def main():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input', type=argparse.FileType('r'),
-                        help='Initial porosity profile')
-    parser.add_argument('output', type=argparse.FileType('w'),
-                        help='Output porosity profile')
-    parser.add_argument('--config', type=str, default=None,
-                        help='Config file')
-
-    args = parser.parse_args()
-
-    config = load_config()
-    if args.config:
-        with open(args.config, 'r') as fp:
-            config = load_config(fp)
-
-    run_compaction(args.input, args.output, **config)

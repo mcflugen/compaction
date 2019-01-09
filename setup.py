@@ -12,7 +12,7 @@ setup(name='compaction',
       packages=find_packages(),
       entry_points={
           'console_scripts': [
-              'compact=compaction.compaction:main',
+              'compact=compaction.cli:main',
           ],
       },
 )
