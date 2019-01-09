@@ -6,9 +6,8 @@ import shutil
 
 import pandas
 import numpy as np
-from numpy.testing import (assert_array_less, assert_array_equal,
-                           assert_array_almost_equal)
-from nose.tools import assert_almost_equal, assert_dict_equal, assert_is_none
+from pytest import approx
+
 import yaml
 from six import StringIO
 
@@ -22,9 +21,9 @@ def test_decreasing_porosity():
     phi = np.full(100, .5)
     phi_new = compact(dz, phi, porosity_max=.5)
 
-    assert_almost_equal(phi_new[0], phi[0])
-    assert_array_less(phi_new[1:], phi[1:])
-    assert_array_less(np.diff(phi_new), 0.)
+    assert phi_new[0] == approx(phi[0])
+    assert np.all(phi_new[1:] < phi[1:])
+    assert np.all(np.diff(phi_new) < 0.)
 
 
 def test_equilibrium_compaction():
@@ -37,7 +36,7 @@ def test_equilibrium_compaction():
 
     phi_2 = compact(dz_1, phi_1, porosity_max=.5)
 
-    assert_array_equal(phi_2, phi_1)
+    assert np.all(phi_2 == approx(phi_1))
 
 
 def test_no_decompaction():
@@ -50,7 +49,7 @@ def test_no_decompaction():
     dz_1[0] /= 2.
 
     phi_2 = compact(dz_1, phi_1, porosity_max=.5)
-    assert_array_equal(phi_2, phi_1)
+    assert np.all(phi_2 == approx(phi_1))
 
 
 def test_increasing_load():
@@ -63,7 +62,7 @@ def test_increasing_load():
     dz_1[0] *= 2.
 
     phi_2 = compact(dz_1, phi_1, porosity_max=.5)
-    assert_array_less(phi_2[1:], phi_1[1:])
+    assert np.all(phi_2[1:] < phi_1[1:])
 
 
 def test_zero_compaction():
@@ -72,7 +71,7 @@ def test_zero_compaction():
     phi_0 = np.full(100, .5)
 
     phi_1 = compact(dz_0, phi_0, porosity_max=.5, c=0.)
-    assert_array_equal(phi_1, phi_0)
+    assert np.all(phi_1 == approx(phi_0))
 
 
 def test_increasing_compactability():
@@ -82,7 +81,7 @@ def test_increasing_compactability():
 
     phi_1 = compact(dz_0, phi_0, porosity_max=.5, c=1e-6)
     phi_2 = compact(dz_0, phi_0, porosity_max=.5, c=1e-3)
-    assert_array_less(phi_2[1:], phi_1[1:])
+    assert np.all(phi_2[1:] < phi_1[1:])
 
 
 def test_void_is_air():
@@ -92,7 +91,7 @@ def test_void_is_air():
 
     phi_1 = compact(dz_0, phi_0, porosity_max=.5, rho_void=0.)
     phi_2 = compact(dz_0, phi_0, porosity_max=.5, rho_void=1000.)
-    assert_array_less(phi_1[1:], phi_2[1:])
+    assert np.all(phi_1[1:] < phi_2[1:])
 
 
 def test_load_config_defaults():
@@ -105,7 +104,7 @@ def test_load_config_defaults():
         'rho_grain': 2650.,
         'rho_void': 1000.,
     }
-    assert_dict_equal(config, defaults)
+    assert config == defaults
 
 
 def test_load_config_from_file():
@@ -122,7 +121,7 @@ def test_load_config_from_file():
         'rho_grain': 2650.,
         'rho_void': 1000.,
     }
-    assert_dict_equal(config, expected)
+    assert config == expected
 
 
 def test_run():
@@ -143,7 +142,7 @@ def test_run():
 
     data = pandas.read_csv(output, names=('dz', 'porosity'), dtype=float)
 
-    assert_array_almost_equal(data.porosity, phi_1)
+    assert np.all(data.porosity.values == approx(phi_1))
 
 
 def test_cli():
@@ -167,4 +166,4 @@ def test_cli():
 
     shutil.rmtree(tmpdir)
 
-    assert_array_almost_equal(data.porosity, phi_1)
+    assert np.all(data.porosity.values == approx(phi_1))
