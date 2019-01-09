@@ -85,8 +85,7 @@ def run_compaction(input=None, output=None, **kwds):
 
     dz_new = init.dz * (1 - init.porosity) / (1 - porosity_new)
 
-    out = pandas.DataFrame.from_items(
-        [('dz', dz_new), ('porosity', porosity_new)])
+    out = pandas.DataFrame.from_dict({'dz': dz_new, 'porosity': porosity_new})
     out.to_csv(output, index=False, header=False)
 
 
