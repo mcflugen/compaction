@@ -1,10 +1,16 @@
 import click
 import yaml
 
+from ._version import get_versions
 from .compaction import load_config, run_compaction
 
 
+__version__ = get_versions()['version']
+del get_versions
+
+
 @click.command()
+@click.version_option(version=__version__)
 @click.option(
     "-v", "--verbose", is_flag=True, help="Also emit status messages to stderr."
 )
@@ -13,6 +19,7 @@ from .compaction import load_config, run_compaction
 @click.argument("input", type=click.File(mode="r"))
 @click.argument("output", default="-", type=click.File(mode="w"))
 def main(input, output, config, dry_run, verbose):
+
     params = load_config(config)
     if verbose:
         click.secho(yaml.dump(params, default_flow_style=False), err=True)
