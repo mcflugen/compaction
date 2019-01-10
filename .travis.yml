@@ -34,6 +34,7 @@ install:
 - conda install -q coveralls flake8 pytest pytest-cov
 - conda install -q --file=requirements.txt -c conda-forge
 script:
+- make install
 - pytest --cov=compaction --cov-report= --cov-report=xml
 - make lint
 after_success:
