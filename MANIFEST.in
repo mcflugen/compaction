@@ -1,0 +1,2 @@
+include versioneer.py
+include compaction/_version.py
