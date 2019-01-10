@@ -10,8 +10,8 @@ import yaml
 from pytest import approx
 from six import StringIO
 
-from compaction import compact, load_config
-from compaction.compaction import run_compaction
+from compaction import compact
+from compaction.cli import run_compaction, load_config
 
 
 def test_decreasing_porosity():
