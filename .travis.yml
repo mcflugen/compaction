@@ -4,12 +4,11 @@ os:
 - osx
 env:
   matrix:
-  - TRAVIS_PYTHON_VERSION="2.7" COVERALLS=1
-  - TRAVIS_PYTHON_VERSION="3.5" COVERALLS=0
+  - TRAVIS_PYTHON_VERSION="3.6"
+  - TRAVIS_PYTHON_VERSION="3.7"
   global:
   - CONDA_PREFIX=$HOME/miniconda
   - MINICONDA_URL_BASE="https://repo.continuum.io/miniconda/Miniconda3-latest"
-  - secure: J40RYiut+NqpblgT+nG1Qu5TPsPDVCvWO42ILNt1vZ3HW2/nfspzLYWhDUgTtajzNTdJceqZYsV3QQZcM91axgYqof4ihdg63ACvU8OTDOAZzozE695vvGA4cjG5oybcSD95tMhHFROOPTxoqBCL/Obgx4BfcZlzA7MdwF8AoxJZHrfdTDKtoc0rUapC6hCDG6U9Vm81VdjEuqXzOWsSVAbVgYbCSjALow6twF39mxNlXpNe4ZMYaAyJ2Mx40KF4hvh+z3VM1oWpOclLgGVVZ3FHp9Pc7/r76K0ZSKFwc+hNSc4enmhZC14EkMrdqnBWmVaH/b0Poo+D/fLmoE80/qqGF9f1D2uUb8I9MVuAfH6J1EblqvsJA3hM2zd1LpfHl0dSWeO0o1b2f74sfI1yDVYmY/LbQseatiEpKnq3284pygGHdk0X4KtuwCwmZnd3i1+7KoLaJCLyPk326+c/0EHOUAzboq7oBceuAB0MlmIHCVqiUPFK2UHs/bsoIYssIXcdE5oEh0uR1ID62r4yqeQpAhVadYxJ7Sf7E17Z+NZudyknVNbmQi6Lfog6Q4/dihY9ysOcPQRN3XFzbri58ke4IMf9gcnQkF5mieWEEXhFITc1uHr8ytNH6tg2hJ48D6s/vsp6mmvX1m/5eDP3670T2X9qWGxAcmRf19aomtY=
 sudo: false
 before_install:
 - |
@@ -25,24 +24,17 @@ install:
   else
     OS="Linux-x86_64"
   fi
-- curl $MINICONDA_URL_BASE-$OS.sh > $HOME/miniconda.sh
-- bash $HOME/miniconda.sh -b -p $CONDA_PREFIX
+- curl $MINICONDA_URL_BASE-$OS.sh > $HOME/minconda.sh
+- bash $HOME/minconda.sh -b -p $CONDA_PREFIX
 - export PATH="$CONDA_PREFIX/bin:$PATH"
 - hash -r
 - conda config --set always_yes yes --set changeps1 no
-- conda install python=$TRAVIS_PYTHON_VERSION
-- conda install -q conda-build anaconda-client coverage sphinx
+- conda create -n _testing python=$TRAVIS_PYTHON_VERSION
+- source activate _testing
+- conda install -q coveralls
+- conda install -q --file=requirements.txt -c conda-forge
 script:
-- conda build ./conda-recipe -c conda-forge
-- conda install compaction nose coverage six --use-local -c conda-forge
-- nosetests --detailed-errors --with-doctest --with-coverage --cover-package=compaction --verbosity=2 compaction
+- pytest --cov=compaction --cov-report= --cov-report=xml
+- make lint install
 after_success:
-- |
-  if [[ "$COVERALLS" == "1" && "$TRAVIS_OS_NAME" == "linux" ]]; then
-    conda install -q coveralls -c conda-forge
-    coveralls --verbose
-  fi
-- curl https://raw.githubusercontent.com/csdms/ci-tools/master/anaconda_upload.py
-  > $HOME/anaconda_upload.py
-- echo $ANACONDA_TOKEN | python $HOME/anaconda_upload.py ./conda-recipe --channel=main
-  --org=csdms --token=-
+- coveralls --verbose
