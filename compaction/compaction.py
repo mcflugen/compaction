@@ -1,9 +1,5 @@
 #! /usr/bin/env python
-import sys
-
 import numpy as np
-import pandas
-import yaml
 from scipy.constants import g as gravity
 
 
@@ -55,43 +51,3 @@ def compact(
     )
 
     return np.minimum(porosity_new, porosity, out=porosity_new)
-
-
-def load_config(file=None):
-    """Load compaction config file.
-
-    Parameters
-    ----------
-    fname : file-like, optional
-        Opened config file or ``None``. If ``None``, return default
-        values.
-
-    Returns
-    -------
-    dict
-        Config parameters.
-    """
-    conf = {
-        "c": 5e-8,
-        "porosity_min": 0.0,
-        "porosity_max": 1.0,
-        "rho_grain": 2650.0,
-        "rho_void": 1000.0,
-    }
-    if file is not None:
-        conf.update(yaml.load(file))
-    return conf
-
-
-def run_compaction(input=None, output=None, **kwds):
-    input = input or sys.stdin
-    output = output or sys.stdout
-
-    init = pandas.read_csv(input, names=("dz", "porosity"), dtype=float)
-
-    porosity_new = compact(init.dz.values, init.porosity.values, **kwds)
-
-    dz_new = init.dz * (1 - init.porosity) / (1 - porosity_new)
-
-    out = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
-    out.to_csv(output, index=False, header=False)
