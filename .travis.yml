@@ -35,7 +35,7 @@ install:
 - conda install -q --file=requirements.txt -c conda-forge
 script:
 - make install
-- pytest --cov --cov-report=xml:$(pwd)/coverage.xml
+- pytest
 - make lint
 after_success:
 - coveralls --verbose
