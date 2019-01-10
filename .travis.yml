@@ -31,7 +31,7 @@ install:
 - conda config --set always_yes yes --set changeps1 no
 - conda create -n _testing python=$TRAVIS_PYTHON_VERSION
 - source activate _testing
-- conda install -q coveralls pytest pytest-cov
+- conda install -q coveralls flake8 pytest pytest-cov
 - conda install -q --file=requirements.txt -c conda-forge
 script:
 - pytest --cov=compaction --cov-report= --cov-report=xml
