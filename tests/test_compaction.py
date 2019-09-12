@@ -11,7 +11,18 @@ from pytest import approx
 from six import StringIO
 
 from compaction import compact
-from compaction.cli import run_compaction, load_config
+from compaction.cli import load_config, run_compaction
+
+
+def test_spatially_distributed():
+    """Test with spatially distributed inputs."""
+    dz = np.full((100, 10), 1.0)
+    phi = np.full((100, 10), 0.5)
+    phi_new = compact(dz, phi, porosity_max=0.5)
+
+    assert phi_new[0] == approx(phi[0])
+    assert np.all(phi_new[1:] < phi[1:])
+    assert np.all(np.diff(phi_new, axis=0) < 0.0)
 
 
 def test_decreasing_porosity():
