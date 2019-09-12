@@ -84,7 +84,7 @@ class Compact(Component):
 
         grid.event_layers.add(0.0, porosity=0.0)
 
-    def run_one_step(self, dt=None):
+    def run_one_step(self):
         dz = self._grid.event_layers.dz
         porosity = self._grid.event_layers["porosity"]
 
@@ -92,6 +92,11 @@ class Compact(Component):
 
         dz[:] = dz * (1 - porosity) / (1 - porosity_new)
         porosity[:] = porosity_new
+
+        return self.grid
+
+    def calculate(self):
+        return self.run_one_step()
 
     @property
     def params(self):
