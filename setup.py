@@ -17,7 +17,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Scientific/Engineering :: Physics",
     ],
-    install_requires=["scipy", "pandas", "pyyaml"],
+    install_requires=["click", "landlab", "numpy", "pandas", "pyyaml", "scipy"],
     setup_requires=[],
     packages=find_packages(),
     entry_points={"console_scripts": ["compact=compaction.cli:main"]},
