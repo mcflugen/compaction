@@ -1,17 +1,9 @@
 """Unit tests for compaction landlab component."""
-import os
-import shutil
-import subprocess
-import tempfile
-
 import numpy as np
-import pandas
-import yaml
+from landlab import RasterModelGrid
 from pytest import approx, fixture, mark, raises
-from six import StringIO
 
 from compaction.landlab import Compact
-from landlab import RasterModelGrid
 
 
 @fixture()
@@ -35,8 +27,8 @@ def test_init_with_layers_added(grid):
     assert np.all(grid.event_layers["porosity"][1:] < 0.7)
     assert grid.event_layers["porosity"][0] == approx(0.7)
 
-    assert np.all(grid.event_layers.dz[0] == approx(100.))
-    assert np.all(grid.event_layers.dz[1:] < 100.)
+    assert np.all(grid.event_layers.dz[0] == approx(100.0))
+    assert np.all(grid.event_layers.dz[1:] < 100.0)
 
 
 def test_layers_compact_evenly(grid):
@@ -45,7 +37,7 @@ def test_layers_compact_evenly(grid):
     compact = Compact(grid, porosity_min=0.1, porosity_max=0.7)
     compact.run_one_step()
 
-    assert grid.event_layers["porosity"].ptp(axis=1) == approx(0.)
+    assert grid.event_layers["porosity"].ptp(axis=1) == approx(0.0)
 
 
 @mark.parametrize(
