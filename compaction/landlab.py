@@ -82,7 +82,7 @@ class Compact(Component):
         self.porosity_max = porosity_max
         self.rho_void = rho_void
 
-        grid.event_layers.add(0., porosity=0.)
+        grid.event_layers.add(0.0, porosity=0.0)
 
     def run_one_step(self, dt=None):
         dz = self._grid.event_layers.dz
@@ -103,7 +103,7 @@ class Compact(Component):
 
     @c.setter
     def c(self, new_val):
-        if new_val >= 0.:
+        if new_val >= 0.0:
             self._compaction_params["c"] = new_val
         else:
             raise ValueError("c must be >= 0.")
@@ -114,7 +114,7 @@ class Compact(Component):
 
     @rho_grain.setter
     def rho_grain(self, new_val):
-        if new_val > 0.:
+        if new_val > 0.0:
             self._compaction_params["rho_grain"] = new_val
         else:
             raise ValueError("rho_grain must be positive")
@@ -133,7 +133,7 @@ class Compact(Component):
 
     @porosity_min.setter
     def porosity_min(self, new_val):
-        if 0. <= new_val <= 1.:
+        if 0.0 <= new_val <= 1.0:
             self._compaction_params["porosity_min"] = new_val
         else:
             raise ValueError("porosity_min must be between [0, 1]")
@@ -142,9 +142,9 @@ class Compact(Component):
     def porosity_max(self):
         return self._compaction_params["porosity_max"]
 
-    @porosity_min.setter
+    @porosity_max.setter
     def porosity_max(self, new_val):
-        if 0. <= new_val <= 1.:
+        if 0.0 <= new_val <= 1.0:
             self._compaction_params["porosity_max"] = new_val
         else:
             raise ValueError("porosity_max must be between [0, 1]")
@@ -153,9 +153,9 @@ class Compact(Component):
     def rho_void(self):
         return self._compaction_params["rho_void"]
 
-    @porosity_min.setter
+    @rho_void.setter
     def rho_void(self, new_val):
-        if new_val > 0.:
+        if new_val > 0.0:
             self._compaction_params["rho_void"] = new_val
         else:
             raise ValueError("rho_void must be positive")
