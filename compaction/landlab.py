@@ -1,14 +1,4 @@
-"""Compact layers of sediment due to overlying load.
-
-Examples
---------
->>> from landlab import RasterModelGrid
->>> grid = RasterModelGrid((3, 4))
->>> for _ in range(10):
-...     grid.event_layers.add(100., porosity=.4)
->>> compact = Compact(grid)
->>> compact.run_one_step()
-"""
+"""Compact layers of sediment due to overlying load."""
 from landlab import Component
 
 from .compaction import compact
@@ -19,7 +9,7 @@ class Compact(Component):
     _name = "Compaction"
     _time_units = ""
     _input_var_names = ("sediment_layer_thickness", "sediment_layer_porority")
-    _output_var_names = ()
+    _output_var_names = ("sediment_layer_porosity",)
     _var_units = {"sediment_layer_thickness": "m", "sediment_layer_porority": ""}
     _var_mapping = {
         "sediment_layer_thickness": "cell",
@@ -64,12 +54,30 @@ class Compact(Component):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from landlab import RasterModelGrid
-        >>> grid = RasterModelGrid((3, 4))
-        >>> for _ in range(10):
-        ...     grid.event_layers.add(100., porosity=.4)
-        >>> compact = Compact(grid)
-        >>> compact.run_one_step()
+        >>> grid = RasterModelGrid((3, 5))
+        >>> for layer in range(5):
+        ...     grid.event_layers.add(100.0, porosity=0.7)
+        >>> compact = Compact(grid, porosity_min=0.1, porosity_max=0.7)
+        >>> compact.run_one_step().event_layers["porosity"] # doctest: +ELLIPSIS
+        array([[ 0.7       ,  0.7       ,  0.7       ],
+                 ...
+               [ 0.        ,  0.        ,  0.        ]])
+        >>> compact.grid.event_layers["porosity"] < 0.7
+        array([[False, False, False],
+               [ True,  True,  True],
+               [ True,  True,  True],
+               [ True,  True,  True],
+               [ True,  True,  True],
+               [ True,  True,  True]], dtype=bool)
+        >>> compact.grid.event_layers.dz < 100.0
+        array([[False, False, False],
+               [ True,  True,  True],
+               [ True,  True,  True],
+               [ True,  True,  True],
+               [ True,  True,  True],
+               [ True,  True,  True]], dtype=bool)
         """
         self._compaction_params = {}
 
