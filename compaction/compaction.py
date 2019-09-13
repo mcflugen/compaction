@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import numpy as np
-from scipy.constants import g as gravity
+from scipy.constants import g
 
 
 def compact(
@@ -12,6 +12,7 @@ def compact(
     porosity_min=0.0,
     porosity_max=1.0,
     rho_void=1000.0,
+    gravity=g,
 ):
     """Compact a column of sediment.
 
@@ -37,6 +38,8 @@ def compact(
         without any compaction [-].
     rho_void : ndarray or number, optional
         Density of the interstitial fluid [kg / m^3].
+    gravity : float, optional
+        Acceleration due to gravity [m / s^2].
 
     Returns
     -------
