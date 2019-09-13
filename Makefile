@@ -24,6 +24,7 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
+
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
@@ -59,6 +60,9 @@ pretty: ## reformat files to make them look pretty
 
 test: ## run tests quickly with the default Python
 	pytest --cov=compaction
+
+benchmark: ## run benchmarks only
+	pytest --benchmark-only --benchmark-autosave
 
 test-all: ## run tests on every Python version with tox
 	tox
