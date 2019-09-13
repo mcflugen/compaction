@@ -18,6 +18,22 @@ def test_init_without_layers_added(grid):
     assert grid.event_layers.dz == approx(0.0)
 
 
+@mark.parametrize("size", (10, 100, 1000, 10000))
+def test_large_landlab_grid(benchmark, size):
+    grid = RasterModelGrid((3, 101))
+    for layer in range(size):
+        grid.event_layers.add(1.0, porosity=0.5)
+
+    compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
+    phi_new = benchmark(compact.calculate)
+
+    assert np.all(grid.event_layers["porosity"][1:] < 0.5)
+    assert grid.event_layers["porosity"][0] == approx(0.5)
+
+    assert np.all(grid.event_layers.dz[0] == approx(1.0))
+    assert np.all(grid.event_layers.dz[1:] < 1.0)
+
+
 def test_init_with_layers_added(grid):
     for layer in range(5):
         grid.event_layers.add(100.0, porosity=0.7)

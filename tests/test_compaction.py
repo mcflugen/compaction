@@ -7,7 +7,7 @@ import tempfile
 import numpy as np
 import pandas
 import yaml
-from pytest import approx
+from pytest import approx, mark
 from six import StringIO
 
 from compaction import compact
@@ -19,6 +19,19 @@ def test_spatially_distributed():
     dz = np.full((100, 10), 1.0)
     phi = np.full((100, 10), 0.5)
     phi_new = compact(dz, phi, porosity_max=0.5)
+
+    assert phi_new[0] == approx(phi[0])
+    assert np.all(phi_new[1:] < phi[1:])
+    assert np.all(np.diff(phi_new, axis=0) < 0.0)
+
+
+@mark.parametrize("size", (10, 100, 1000, 10000))
+def test_grid_size(benchmark, size):
+    dz = np.full((size, 100), 1.0)
+    phi = np.full((size, 100), 0.5)
+    phi_new = compact(dz, phi, porosity_max=0.5)
+
+    phi_new = benchmark(compact, dz, phi, porosity_max=0.5)
 
     assert phi_new[0] == approx(phi[0])
     assert np.all(phi_new[1:] < phi[1:])
