@@ -11,7 +11,18 @@ from pytest import approx
 from six import StringIO
 
 from compaction import compact
-from compaction.cli import run_compaction, load_config
+from compaction.cli import load_config, run_compaction
+
+
+def test_spatially_distributed():
+    """Test with spatially distributed inputs."""
+    dz = np.full((100, 10), 1.0)
+    phi = np.full((100, 10), 0.5)
+    phi_new = compact(dz, phi, porosity_max=0.5)
+
+    assert phi_new[0] == approx(phi[0])
+    assert np.all(phi_new[1:] < phi[1:])
+    assert np.all(np.diff(phi_new, axis=0) < 0.0)
 
 
 def test_decreasing_porosity():
@@ -144,26 +155,22 @@ def test_run():
     assert np.all(data.porosity.values == approx(phi_1))
 
 
-def test_cli():
+def test_cli(tmpdir):
     """Test the compaction command-line interface."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
     phi_1 = compact(dz_0, phi_0, porosity_max=0.5)
 
-    tmpdir = tempfile.mkdtemp()
-    os.chdir(tmpdir)
+    with tmpdir.as_cwd():
+        df = pandas.DataFrame.from_items([("dz", dz_0), ("porosity", phi_0)])
+        df.to_csv("porosity_in.csv", index=False, header=False)
 
-    df = pandas.DataFrame.from_items([("dz", dz_0), ("porosity", phi_0)])
-    df.to_csv("porosity_in.csv", index=False, header=False)
+        with open("config.yaml", "w") as fp:
+            yaml.dump(dict(porosity_max=0.5), fp)
 
-    with open("config.yaml", "w") as fp:
-        yaml.dump(dict(porosity_max=0.5), fp)
+        subprocess.check_call(
+            ["compact", "porosity_in.csv", "porosity_out.csv", "--config=config.yaml"]
+        )
+        data = pandas.read_csv("porosity_out.csv", names=("dz", "porosity"))
 
-    subprocess.check_call(
-        ["compact", "porosity_in.csv", "porosity_out.csv", "--config=config.yaml"]
-    )
-    data = pandas.read_csv("porosity_out.csv", names=("dz", "porosity"))
-
-    shutil.rmtree(tmpdir)
-
-    assert np.all(data.porosity.values == approx(phi_1))
+        assert np.all(data.porosity.values == approx(phi_1))

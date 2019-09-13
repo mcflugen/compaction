@@ -17,7 +17,6 @@ before_install:
     brew cleanup -s
     rm -rf $(brew --cache)
   fi
-install:
 - |
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     OS="MacOSX-x86_64"
@@ -31,11 +30,10 @@ install:
 - conda config --set always_yes yes --set changeps1 no
 - conda create -n _testing python=$TRAVIS_PYTHON_VERSION
 - source activate _testing
-- conda install -q coveralls flake8 pytest pytest-cov
-- conda install -q --file=requirements.txt -c conda-forge
+- conda info -a && conda list
+install:
+- pip install -e .
 script:
-- make install
-- pytest
-- make lint
-after_success:
-- coveralls --verbose
+- pip install pytest pytest-cov pytest-datadir coveralls
+- pytest -vvv --cov=compaction --cov-report=xml:$(pwd)/coverage.xml
+after_success: coveralls
