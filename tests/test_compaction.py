@@ -1,12 +1,8 @@
 """Unit tests for compaction."""
-import os
-import shutil
 import subprocess
-import tempfile
 
 import numpy as np
 import pandas
-import scipy.interpolate
 import yaml
 from pytest import approx, mark
 from six import StringIO

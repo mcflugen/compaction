@@ -25,7 +25,7 @@ def test_large_landlab_grid(benchmark, size):
         grid.event_layers.add(1.0, porosity=0.5)
 
     compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
-    phi_new = benchmark(compact.calculate)
+    benchmark(compact.calculate)
 
     assert np.all(grid.event_layers["porosity"][1:] < 0.5)
     assert grid.event_layers["porosity"][0] == approx(0.5)
