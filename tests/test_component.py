@@ -1,11 +1,11 @@
 """Unit tests for compaction landlab component."""
 import numpy as np
-from numpy.testing import assert_array_almost_equal
 from landlab import RasterModelGrid
+from numpy.testing import assert_array_almost_equal
 from pytest import approx, fixture, mark, raises
 
-from compaction.landlab import Compact
 import compaction
+from compaction.landlab import Compact
 
 
 @fixture()
