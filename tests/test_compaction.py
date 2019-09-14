@@ -54,6 +54,7 @@ def test_spatially_distributed():
 
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
+@mark.benchmark(group="compaction")
 def test_grid_size(benchmark, size):
     dz = np.full((size, 100), 1.0)
     phi = np.full((size, 100), 0.5)

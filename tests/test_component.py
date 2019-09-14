@@ -84,9 +84,34 @@ def test_layers_compact_evenly(grid):
         ("porosity_max", 1 + 1e-6),
         ("rho_void", -1),
         ("rho_void", 0.0),
+        ("gravity", 0.0),
+        ("gravity", -1.0),
     ],
 )
 def test_init_with_bad_param(grid, param, value):
     params = {param: value}
     with raises(ValueError):
         Compact(grid, **params)
+
+
+@mark.parametrize(
+    "property,value",
+    [
+        ("c", 0.5),
+        ("rho_grain", 3300.0),
+        ("excess_pressure", 1.0),
+        ("porosity_min", 0.1),
+        ("porosity_max", 0.8),
+        ("rho_void", 1030.0),
+        ("gravity", 3.711),
+    ],
+)
+def test_property_getter_setter(grid, property, value):
+    compact = Compact(grid, **{property: value})
+    assert getattr(compact, property) == approx(value)
+    assert dict(compact.params)[property] == approx(value)
+
+    compact = Compact(grid)
+    setattr(compact, property, value)
+    assert getattr(compact, property) == approx(value)
+    assert dict(compact.params)[property] == approx(value)
