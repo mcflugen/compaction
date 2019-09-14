@@ -1,17 +1,45 @@
 """Unit tests for compaction."""
-import os
-import shutil
 import subprocess
-import tempfile
 
 import numpy as np
 import pandas
 import yaml
-from pytest import approx
+from pytest import approx, mark
 from six import StringIO
 
 from compaction import compact
 from compaction.cli import load_config, run_compaction
+
+
+def test_to_analytical():
+    c = 3.68e-8
+    rho_s = 2650.0
+    rho_w = 1000.0
+    phi_0 = 0.6
+    g = 9.81
+
+    dz = np.full(2000, 10.0)
+    phi = np.full(len(dz), phi_0)
+
+    phi_numerical = compact(
+        dz,
+        phi,
+        porosity_min=0.0,
+        porosity_max=phi_0,
+        c=c,
+        gravity=g,
+        rho_grain=rho_s,
+        rho_void=rho_w,
+    )
+
+    z = np.cumsum(dz * (1 - phi) / (1 - phi_numerical))
+    phi_analytical = np.exp(-c * g * (rho_s - rho_w) * z) / (
+        np.exp(-c * g * (rho_s - rho_w) * z) + (1.0 - phi_0) / phi_0
+    )
+
+    sup_norm = np.max(np.abs(phi_numerical - phi_analytical) / phi_analytical)
+
+    assert sup_norm < 0.01
 
 
 def test_spatially_distributed():
@@ -19,6 +47,20 @@ def test_spatially_distributed():
     dz = np.full((100, 10), 1.0)
     phi = np.full((100, 10), 0.5)
     phi_new = compact(dz, phi, porosity_max=0.5)
+
+    assert phi_new[0] == approx(phi[0])
+    assert np.all(phi_new[1:] < phi[1:])
+    assert np.all(np.diff(phi_new, axis=0) < 0.0)
+
+
+@mark.parametrize("size", (10, 100, 1000, 10000))
+@mark.benchmark(group="compaction")
+def test_grid_size(benchmark, size):
+    dz = np.full((size, 100), 1.0)
+    phi = np.full((size, 100), 0.5)
+    phi_new = compact(dz, phi, porosity_max=0.5)
+
+    phi_new = benchmark(compact, dz, phi, porosity_max=0.5)
 
     assert phi_new[0] == approx(phi[0])
     assert np.all(phi_new[1:] < phi[1:])

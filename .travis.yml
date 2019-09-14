@@ -34,6 +34,6 @@ before_install:
 install:
 - pip install -e .
 script:
-- pip install pytest pytest-cov pytest-datadir coveralls
+- pip install pytest pytest-cov pytest-datadir pytest-benchmark coveralls
 - pytest -vvv --cov=compaction --cov-report=xml:$(pwd)/coverage.xml
 after_success: coveralls

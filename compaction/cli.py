@@ -72,4 +72,4 @@ def main(input, output, config, dry_run, verbose):
         run_compaction(input, output, **params)
 
         click.secho("💥 Finished! 💥", err=True, fg="green")
-        click.secho("Output written to {0}".format(output.name), fg="green")
+        click.secho("Output written to {0}".format(output.name), err=True, fg="green")

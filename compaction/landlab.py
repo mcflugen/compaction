@@ -1,5 +1,6 @@
 """Compact layers of sediment due to overlying load."""
 from landlab import Component
+from scipy.constants import g
 
 from .compaction import compact
 
@@ -29,6 +30,7 @@ class Compact(Component):
         porosity_min=0.0,
         porosity_max=1.0,
         rho_void=1000.0,
+        gravity=g,
     ):
         """Compact layers of sediment.
 
@@ -51,6 +53,8 @@ class Compact(Component):
             without any compaction [-].
         rho_void : ndarray or number, optional
             Density of the interstitial fluid [kg / m^3].
+        gravity : float
+            Acceleration due to gravity [m / s^2].
 
         Examples
         --------
@@ -89,6 +93,7 @@ class Compact(Component):
         self.porosity_min = porosity_min
         self.porosity_max = porosity_max
         self.rho_void = rho_void
+        self.gravity = gravity
 
         grid.event_layers.add(0.0, porosity=0.0)
 
@@ -172,3 +177,14 @@ class Compact(Component):
             self._compaction_params["rho_void"] = new_val
         else:
             raise ValueError("rho_void must be positive")
+
+    @property
+    def gravity(self):
+        return self._compaction_params["gravity"]
+
+    @gravity.setter
+    def gravity(self, new_val):
+        if new_val > 0.0:
+            self._compaction_params["gravity"] = new_val
+        else:
+            raise ValueError("gravity must be positive")
