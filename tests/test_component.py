@@ -1,14 +1,29 @@
 """Unit tests for compaction landlab component."""
 import numpy as np
+from numpy.testing import assert_array_almost_equal
 from landlab import RasterModelGrid
 from pytest import approx, fixture, mark, raises
 
 from compaction.landlab import Compact
+import compaction
 
 
 @fixture()
 def grid():
     return RasterModelGrid((3, 5))
+
+
+def test_matches_module(grid):
+    dz = np.full((100, 3), 1.0)
+    phi = np.full((100, 3), 0.5)
+    phi_expected = compaction.compact(dz, phi, porosity_max=0.5)
+
+    for layer in range(100):
+        grid.event_layers.add(1.0, porosity=0.5)
+    compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
+    compact.calculate()
+
+    assert_array_almost_equal(grid.event_layers["porosity"][:-1, :], phi_expected)
 
 
 def test_init_without_layers_added(grid):
@@ -19,7 +34,8 @@ def test_init_without_layers_added(grid):
 
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
-def test_large_landlab_grid(benchmark, size):
+@mark.benchmark(group="landlab")
+def test_grid_size(benchmark, size):
     grid = RasterModelGrid((3, 101))
     for layer in range(size):
         grid.event_layers.add(1.0, porosity=0.5)
