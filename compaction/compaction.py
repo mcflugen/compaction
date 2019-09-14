@@ -46,6 +46,8 @@ def compact(
     porosity : ndarray
         New porosities after compaction.
     """
+    dz, porosity = np.asarray(dz), np.asarray(porosity)
+
     load = (rho_grain - rho_void) * dz * (1.0 - porosity) * gravity
     overlying_load = np.cumsum(load, axis=0) - load - excess_pressure
 
