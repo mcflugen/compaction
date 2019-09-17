@@ -1,6 +1,4 @@
 """Unit tests for compaction."""
-import subprocess
-
 import numpy as np
 import pandas
 import yaml
@@ -65,6 +63,24 @@ def test_grid_size(benchmark, size):
     assert phi_new[0] == approx(phi[0])
     assert np.all(phi_new[1:] < phi[1:])
     assert np.all(np.diff(phi_new, axis=0) < 0.0)
+
+
+@mark.parametrize("size", (10, 100, 1000, 10000))
+@mark.benchmark(group="compaction-with-dz")
+def test_grid_size_with_dz(benchmark, size):
+    dz = np.full((size, 100), 1.0)
+    phi = np.full((size, 100), 0.5)
+    phi_new = compact(dz, phi, porosity_max=0.5)
+
+    phi_new, dz_new = benchmark(compact, dz, phi, porosity_max=0.5, return_dz=True)
+
+    assert phi_new[0] == approx(phi[0])
+    assert np.all(phi_new[1:] < phi[1:])
+    assert np.all(np.diff(phi_new, axis=0) < 0.0)
+
+    assert dz_new[0] == approx(dz[0])
+    assert np.all(dz_new[1:] < dz[1:])
+    assert np.all(np.diff(dz_new, axis=0) < 0.0)
 
 
 def test_decreasing_porosity():
@@ -195,24 +211,3 @@ def test_run():
     data = pandas.read_csv(output, names=("dz", "porosity"), dtype=float)
 
     assert np.all(data.porosity.values == approx(phi_1))
-
-
-def test_cli(tmpdir):
-    """Test the compaction command-line interface."""
-    dz_0 = np.full(100, 1.0)
-    phi_0 = np.full(100, 0.5)
-    phi_1 = compact(dz_0, phi_0, porosity_max=0.5)
-
-    with tmpdir.as_cwd():
-        df = pandas.DataFrame.from_items([("dz", dz_0), ("porosity", phi_0)])
-        df.to_csv("porosity_in.csv", index=False, header=False)
-
-        with open("config.yaml", "w") as fp:
-            yaml.dump(dict(porosity_max=0.5), fp)
-
-        subprocess.check_call(
-            ["compact", "porosity_in.csv", "porosity_out.csv", "--config=config.yaml"]
-        )
-        data = pandas.read_csv("porosity_out.csv", names=("dz", "porosity"))
-
-        assert np.all(data.porosity.values == approx(phi_1))
