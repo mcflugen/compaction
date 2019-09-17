@@ -1,0 +1,41 @@
+environment:
+
+  global:
+    WITH_COMPILER: "cmd /E:ON /V:ON /C .\\.ci\\appveyor\\run_with_env.cmd"
+
+  matrix:
+
+    - TARGET_ARCH: x64
+      CONDA_NPY: 111
+      CONDA_INSTALL_LOCN: C:\\Miniconda37-x64
+      CONDA_PY: 3.7
+
+    - TARGET_ARCH: x64
+      CONDA_NPY: 111
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+      CONDA_PY: 3.6
+
+platform:
+  - x64
+
+os: Previous Visual Studio 2015
+# os: Visual Studio 2013
+
+init:
+  - "ECHO %CONDA_INSTALL_LOCN% %CONDA_PY% %HOME% %PLATFORM%"
+  - "ECHO %APPVEYOR_REPO_BRANCH%"
+
+install:
+  - cmd: call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
+  - cmd: conda update --yes --quiet conda
+  - cmd: set PYTHONUNBUFFERED=1
+  - cmd: conda config --set always_yes yes
+  - cmd: pip install pytest pytest-cov pytest-datadir pytest-benchmark
+  - cmd: conda info
+  - cmd: conda list
+
+build: false
+
+test_script:
+  - "%WITH_COMPILER% pip install -e ."
+  - pytest -vvv
