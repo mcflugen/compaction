@@ -37,5 +37,5 @@ install:
 build: false
 
 test_script:
-  - "%WITH_COMPILER% pip install -e ."
-  - pytest -vvv
+  - cmd: pip install -e .
+  - cmd: pytest -vvv
