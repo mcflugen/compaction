@@ -20,27 +20,12 @@ jobs:
     - make lint
   - stage: deploy
     if: tag=~ v.*$
-    os: osx
+    os: linux
     env: TRAVIS_PYTHON_VERSION=3.7
     script: &1
     - pip install twine wheel
-    - python setup.py bdist_wheel
+    - python setup.py sdist
     - twine upload -u mcflugen -p$PYPI_PASS dist/*compaction*
-  - stage: deploy
-    if: tag=~ v.*$
-    os: osx
-    env: TRAVIS_PYTHON_VERSION=3.6
-    script: *1
-  - stage: deploy
-    if: tag=~ v.*$
-    os: linux
-    env: TRAVIS_PYTHON_VERSION=3.7
-    script: *1
-  - stage: deploy
-    if: tag=~ v.*$
-    os: linux
-    env: TRAVIS_PYTHON_VERSION=3.6
-    script: *1
 before_install:
 - |
   if [[ $TRAVIS_OS_NAME == "osx" ]]; then
