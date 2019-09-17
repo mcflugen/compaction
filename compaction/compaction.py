@@ -13,6 +13,7 @@ def compact(
     porosity_max=1.0,
     rho_void=1000.0,
     gravity=g,
+    return_dz=False,
 ):
     """Compact a column of sediment.
 
@@ -40,13 +41,16 @@ def compact(
         Density of the interstitial fluid [kg / m^3].
     gravity : float, optional
         Acceleration due to gravity [m / s^2].
+    return_dz : bool, optional
+        If *True*, return compacted thickness array along with compacted porosities
+        as a tuple of *(porosity, dz)*.
 
     Returns
     -------
     porosity : ndarray
         New porosities after compaction.
     """
-    dz, porosity = np.asarray(dz), np.asarray(porosity)
+    dz, porosity = np.asarray(dz, dtype=float), np.asarray(porosity, dtype=float)
 
     load = (rho_grain - rho_void) * dz * (1.0 - porosity) * gravity
     overlying_load = np.cumsum(load, axis=0) - load - excess_pressure
@@ -55,4 +59,9 @@ def compact(
         -c * overlying_load
     )
 
-    return np.minimum(porosity_new, porosity, out=porosity_new)
+    np.minimum(porosity_new, porosity, out=porosity_new)
+
+    if return_dz:
+        return porosity_new, dz * (1.0 - porosity) / (1.0 - porosity_new)
+    else:
+        return porosity_new

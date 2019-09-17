@@ -9,7 +9,23 @@ env:
   global:
   - CONDA_PREFIX=$HOME/miniconda
   - MINICONDA_URL_BASE="https://repo.continuum.io/miniconda/Miniconda3-latest"
+  - secure: If5+q1H1EQwEZrhYvQAGoYBaVTu1Bfkw+J5OrIY5CanuhLExXK1CLVHMKML2sZdMEHIOGhBYaeUqHlEVbvP94Wb8RobfL4NT5FjOfXk9zbiT3vRdAbgJzCVy2ervx6m4acZcnrn0LCu6FQW294M7DUEK77ZQJToj3Qy0ypWDwzijAN/wWD5NZWc8Kndg2yH76qBXCQO79S242/gryPq83dbjwVW79+uUCsmhKsV5r8MIKib0Xm6zbd8a5qLsSveTNlx6zNMaVadkZM6r7mKt6mk6pEZxuL8GWWUo0SntZCW3FNncO9SrTfC2uOsBRF3BWDIWZHVqcedkdahNsOkVr95rYk+XjeKj0alWY8RsBwGl1XWMIJAFEQdgVfy+wvccOB41ZZXwICaT8TKKGpY/Za97DJF1g6rU/PCojA578YCyBjrqng5X7nQh9FBS74VpItt2oHE3KnAwyTrcboatXL2z1lpeHenAK8+rijYzLY288MMzTXw4risaPEI32QxGtPlzymDCbIAJqi3tZ5dTRTbffEmSjmRp3aBer0gY2qajq7uKo4TLiqhOIpWeQZA/ncF2PUqbkFtkd9ZejcZakUoAZ8wsAhfUTvebVsWMf7A7g1BKrStNdlo8OnNX0soIMLUSzGACag8khHUOdSKYEEtxMQC2wW5diq3VC36HbKs=
 sudo: false
+jobs:
+  include:
+  - stage: lint
+    os: linux
+    script:
+    - pip install flake8
+    - make lint
+  - stage: deploy
+    if: tag=~ v.*$
+    os: linux
+    env: TRAVIS_PYTHON_VERSION=3.7
+    script: &1
+    - pip install twine wheel
+    - python setup.py sdist
+    - twine upload -u mcflugen -p$PYPI_PASS dist/*compaction*
 before_install:
 - |
   if [[ $TRAVIS_OS_NAME == "osx" ]]; then
