@@ -8,7 +8,7 @@ setup(
     description="Compact sediment",
     author="Eric Hutton",
     author_email="huttone@colorado.edu",
-    url="http://csdms.colorado.edu",
+    url="https://github.com/mcflugen/compaction",
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
