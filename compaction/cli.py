@@ -1,5 +1,5 @@
 import sys
-from typing import TextIO, Optional
+from typing import Optional, TextIO
 
 import click
 import pandas  # type: ignore
@@ -39,9 +39,7 @@ def load_config(file: Optional[TextIO] = None):
 
 
 def run_compaction(
-    input: Optional[TextIO] = None,
-    output: Optional[TextIO] = None,
-    **kwds
+    input: Optional[TextIO] = None, output: Optional[TextIO] = None, **kwds
 ) -> None:
     input = input or sys.stdin
     output = output or sys.stdout
@@ -65,8 +63,7 @@ def run_compaction(
 )
 @click.argument("input", type=click.File(mode="r"))
 @click.argument("output", default="-", type=click.File(mode="w"))
-def main(
-    input: TextIO, output: TextIO, config: TextIO, dry_run: bool, verbose: bool):
+def main(input: TextIO, output: TextIO, config: TextIO, dry_run: bool, verbose: bool):
 
     params = load_config(config)
     if verbose:

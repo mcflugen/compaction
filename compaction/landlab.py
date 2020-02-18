@@ -26,13 +26,13 @@ class Compact(Component):
     def __init__(
         self,
         grid,
-        c: float=5e-8,
-        rho_grain: float=2650.0,
-        excess_pressure: float=0.0,
-        porosity_min:float=0.0,
-        porosity_max: float=1.0,
-        rho_void: float=1000.0,
-        gravity:float=g,
+        c: float = 5e-8,
+        rho_grain: float = 2650.0,
+        excess_pressure: float = 0.0,
+        porosity_min: float = 0.0,
+        porosity_max: float = 1.0,
+        rho_void: float = 1000.0,
+        gravity: float = g,
     ):
         """Compact layers of sediment.
 

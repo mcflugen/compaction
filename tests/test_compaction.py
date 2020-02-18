@@ -90,11 +90,11 @@ def test_bad_return_dz() -> None:
 
     dz_new = np.empty((10, 100), dtype=int)
     with raises(TypeError):
-        phi_new = compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
+        compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
 
     dz_new = np.empty((1, 100), dtype=dz.dtype)
     with raises(TypeError):
-        phi_new = compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
+        compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
 
 
 def test_decreasing_porosity() -> None:

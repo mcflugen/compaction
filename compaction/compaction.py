@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from typing import Optional, Tuple
+from typing import Optional
 
 import numpy as np  # type: ignore
 from scipy.constants import g  # type: ignore
