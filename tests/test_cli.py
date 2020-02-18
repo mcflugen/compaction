@@ -3,6 +3,7 @@ import os
 
 import pandas  # type: ignore
 import pytest  # type: ignore
+import numpy as np  # type: ignore
 import yaml
 from click.testing import CliRunner
 from numpy.testing import assert_array_almost_equal  # type: ignore
@@ -94,3 +95,39 @@ def test_constant_porosity(tmpdir, datadir):
         phi_actual = pandas.read_csv("out.txt", names=("dz", "porosity"), dtype=float)
 
     assert_array_almost_equal(phi_actual["porosity"], phi_expected)
+
+
+def test_setup(tmpdir):
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+        result = runner.invoke(cli.setup, ["."])
+
+        assert result.exit_code == 0
+        assert (tmpdir / "config.yaml").exists()
+        assert (tmpdir / "porosity.csv").exists()
+
+
+def test_show_config(tmpdir):
+    runner = CliRunner()
+    result = runner.invoke(cli.show, ["config"])
+
+    assert result.exit_code == 0
+
+    params = yaml.load(result.output)
+    assert isinstance(params, dict)
+
+
+def test_show_porosity(tmpdir):
+    runner = CliRunner()
+    result = runner.invoke(cli.show, ["porosity"])
+
+    assert result.exit_code == 0
+
+    with open(tmpdir / "porosity.csv", "w") as fp:
+        fp.write(result.output)
+
+    data = pandas.read_csv(
+        tmpdir / "porosity.csv", names=("dz", "porosity"), dtype=float, comment="#"
+    )
+    assert np.all(data.dz.values > 0.0)
+    assert np.all(data.porosity.values >= 0.0)
