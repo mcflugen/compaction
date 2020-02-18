@@ -1,5 +1,6 @@
 import pathlib
 import sys
+from io import StringIO
 from typing import Optional, TextIO
 
 import click
