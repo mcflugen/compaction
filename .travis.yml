@@ -49,7 +49,7 @@ before_install:
 - source activate _testing
 - conda info -a && conda list
 install:
-- pip install -e .
+- pip install --pre -e .
 script:
 - pip install -r requirements-testing.txt
 - pip install pytest pytest-cov pytest-datadir pytest-benchmark coveralls

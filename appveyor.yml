@@ -32,5 +32,5 @@ install:
 build: false
 
 test_script:
-  - cmd: pip install -e .
+  - cmd: pip install --pre -e .
   - cmd: pytest -vvv
