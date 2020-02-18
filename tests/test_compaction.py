@@ -2,7 +2,7 @@
 import numpy as np  # type: ignore
 import pandas  # type: ignore
 import yaml
-from pytest import approx, mark  # type: ignore
+from pytest import approx, mark, raises  # type: ignore
 from six import StringIO
 
 from compaction import compact
@@ -72,7 +72,8 @@ def test_grid_size_with_dz(benchmark, size) -> None:
     phi = np.full((size, 100), 0.5)
     phi_new = compact(dz, phi, porosity_max=0.5)
 
-    phi_new, dz_new = benchmark(compact, dz, phi, porosity_max=0.5, return_dz=True)
+    dz_new = np.empty_like(dz)
+    phi_new = benchmark(compact, dz, phi, porosity_max=0.5, return_dz=dz_new)
 
     assert phi_new[0] == approx(phi[0])
     assert np.all(phi_new[1:] < phi[1:])
@@ -81,6 +82,19 @@ def test_grid_size_with_dz(benchmark, size) -> None:
     assert dz_new[0] == approx(dz[0])
     assert np.all(dz_new[1:] < dz[1:])
     assert np.all(np.diff(dz_new, axis=0) < 0.0)
+
+
+def test_bad_return_dz() -> None:
+    dz = np.full((10, 100), 1.0)
+    phi = np.full((10, 100), 0.5)
+
+    dz_new = np.empty((10, 100), dtype=int)
+    with raises(TypeError):
+        phi_new = compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
+
+    dz_new = np.empty((1, 100), dtype=dz.dtype)
+    with raises(TypeError):
+        phi_new = compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
 
 
 def test_decreasing_porosity() -> None:
