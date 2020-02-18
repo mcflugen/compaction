@@ -212,16 +212,16 @@ def test_run() -> None:
     phi_0 = np.full(100, 0.5)
     phi_1 = compact(dz_0, phi_0, porosity_max=0.5)
 
-    input = StringIO()
-    output = StringIO()
+    src = StringIO()
+    dest = StringIO()
 
     df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
-    df.to_csv(input, index=False, header=False)
+    df.to_csv(src, index=False, header=False)
 
-    input.seek(0)
-    run_compaction(input=input, output=output, porosity_max=0.5)
-    output.seek(0)
+    src.seek(0)
+    run_compaction(src=src, dest=dest, porosity_max=0.5)
+    dest.seek(0)
 
-    data = pandas.read_csv(output, names=("dz", "porosity"), dtype=float)
+    data = pandas.read_csv(dest, names=("dz", "porosity"), dtype=float)
 
     assert np.all(data.porosity.values == approx(phi_1))

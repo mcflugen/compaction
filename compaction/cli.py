@@ -39,19 +39,19 @@ def load_config(file: Optional[TextIO] = None):
 
 
 def run_compaction(
-    input: Optional[TextIO] = None, output: Optional[TextIO] = None, **kwds
+    src: Optional[TextIO] = None, dest: Optional[TextIO] = None, **kwds
 ) -> None:
-    input = input or sys.stdin
-    output = output or sys.stdout
+    src = src or sys.stdin
+    dest = dest or sys.stdout
 
-    init = pandas.read_csv(input, names=("dz", "porosity"), dtype=float)
+    init = pandas.read_csv(src, names=("dz", "porosity"), dtype=float)
 
     porosity_new = compact(init.dz.values, init.porosity.values, **kwds)
 
     dz_new = init.dz * (1 - init.porosity) / (1 - porosity_new)
 
     out = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
-    out.to_csv(output, index=False, header=False)
+    out.to_csv(dest, index=False, header=False)
 
 
 @click.command()
@@ -61,9 +61,9 @@ def run_compaction(
 @click.option(
     "--config", default=None, type=click.File(mode="r"), help="Configuration file"
 )
-@click.argument("input", type=click.File(mode="r"))
-@click.argument("output", default="-", type=click.File(mode="w"))
-def main(input: TextIO, output: TextIO, config: TextIO, dry_run: bool, verbose: bool):
+@click.argument("src", type=click.File(mode="r"))
+@click.argument("dest", default="-", type=click.File(mode="w"))
+def main(src: TextIO, dest: TextIO, config: TextIO, dry_run: bool, verbose: bool):
 
     params = load_config(config)
     if verbose:
@@ -72,7 +72,7 @@ def main(input: TextIO, output: TextIO, config: TextIO, dry_run: bool, verbose: 
     if dry_run:
         click.secho("Nothing to do. 😴", err=True, fg="green")
     else:
-        run_compaction(input, output, **params)
+        run_compaction(src, dest, **params)
 
         click.secho("💥 Finished! 💥", err=True, fg="green")
-        click.secho("Output written to {0}".format(output.name), err=True, fg="green")
+        click.secho("Output written to {0}".format(dest.name), err=True, fg="green")
