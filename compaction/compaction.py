@@ -1,27 +1,29 @@
 #! /usr/bin/env python
-import numpy as np
-from scipy.constants import g
+from typing import Optional
+
+import numpy as np  # type: ignore
+from scipy.constants import g  # type: ignore
 
 
 def compact(
-    dz,
-    porosity,
-    c=5e-8,
-    rho_grain=2650.0,
-    excess_pressure=0.0,
-    porosity_min=0.0,
-    porosity_max=1.0,
-    rho_void=1000.0,
-    gravity=g,
-    return_dz=False,
-):
+    dz: np.ndarray,
+    porosity: np.ndarray,
+    c: float = 5e-8,
+    rho_grain: float = 2650.0,
+    excess_pressure: float = 0.0,
+    porosity_min: float = 0.0,
+    porosity_max: float = 1.0,
+    rho_void: float = 1000.0,
+    gravity: float = g,
+    return_dz: Optional[np.ndarray] = None,
+) -> np.ndarray:
     """Compact a column of sediment.
 
     Parameters
     ----------
-    dz : ndarray
+    dz : ndarray of float
         Array of sediment thicknesses with depth (the first element is
-        the top of the sediment column)[meters].
+        the top of the sediment column) [meters].
     porosity : ndarray or number
         Sediment porosity [-].
     c : ndarray or number, optional
@@ -41,9 +43,9 @@ def compact(
         Density of the interstitial fluid [kg / m^3].
     gravity : float, optional
         Acceleration due to gravity [m / s^2].
-    return_dz : bool, optional
-        If *True*, return compacted thickness array along with compacted porosities
-        as a tuple of *(porosity, dz)*.
+    return_dz : ndarray of float, optional
+        If provided, an output array into which to place the calculated
+        compacted layer thicknesses.
 
     Returns
     -------
@@ -61,7 +63,14 @@ def compact(
 
     np.minimum(porosity_new, porosity, out=porosity_new)
 
-    if return_dz:
-        return porosity_new, dz * (1.0 - porosity) / (1.0 - porosity_new)
-    else:
-        return porosity_new
+    if return_dz is not None:
+        if return_dz.dtype is dz.dtype and return_dz.shape == dz.shape:
+            return_dz[:] = dz * (1.0 - porosity) / (1.0 - porosity_new)
+        else:
+            raise TypeError(
+                "size and shape of return_dz ({0}, {1}) must be that of dz ({2}, {3})".format(
+                    return_dz.dtype, return_dz.shape, dz.dtype, dz.shape
+                )
+            )
+
+    return porosity_new

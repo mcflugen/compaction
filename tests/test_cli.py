@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import os
 
-import pandas
-import pytest
+import pandas  # type: ignore
+import pytest  # type: ignore
 import yaml
 from click.testing import CliRunner
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal  # type: ignore
 
 from compaction import cli, compact
 

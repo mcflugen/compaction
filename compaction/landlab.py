@@ -1,6 +1,8 @@
 """Compact layers of sediment due to overlying load."""
-from landlab import Component
-from scipy.constants import g
+from typing import Dict
+
+from landlab import Component  # type: ignore
+from scipy.constants import g  # type: ignore
 
 from .compaction import compact
 
@@ -24,13 +26,13 @@ class Compact(Component):
     def __init__(
         self,
         grid,
-        c=5e-8,
-        rho_grain=2650.0,
-        excess_pressure=0.0,
-        porosity_min=0.0,
-        porosity_max=1.0,
-        rho_void=1000.0,
-        gravity=g,
+        c: float = 5e-8,
+        rho_grain: float = 2650.0,
+        excess_pressure: float = 0.0,
+        porosity_min: float = 0.0,
+        porosity_max: float = 1.0,
+        rho_void: float = 1000.0,
+        gravity: float = g,
     ):
         """Compact layers of sediment.
 
@@ -83,7 +85,7 @@ class Compact(Component):
                [ True,  True,  True],
                [ True,  True,  True]], dtype=bool)
         """
-        self._compaction_params = {}
+        self._compaction_params: Dict[str, float] = {}
 
         super(Compact, self).__init__(grid)
 
@@ -116,74 +118,74 @@ class Compact(Component):
         return tuple(self._compaction_params.items())
 
     @property
-    def c(self):
+    def c(self) -> float:
         return self._compaction_params["c"]
 
     @c.setter
-    def c(self, new_val):
+    def c(self, new_val: float):
         if new_val >= 0.0:
             self._compaction_params["c"] = new_val
         else:
             raise ValueError("c must be >= 0.")
 
     @property
-    def rho_grain(self):
+    def rho_grain(self) -> float:
         return self._compaction_params["rho_grain"]
 
     @rho_grain.setter
-    def rho_grain(self, new_val):
+    def rho_grain(self, new_val: float):
         if new_val > 0.0:
             self._compaction_params["rho_grain"] = new_val
         else:
             raise ValueError("rho_grain must be positive")
 
     @property
-    def excess_pressure(self):
+    def excess_pressure(self) -> float:
         return self._compaction_params["excess_pressure"]
 
     @excess_pressure.setter
-    def excess_pressure(self, new_val):
+    def excess_pressure(self, new_val: float):
         self._compaction_params["excess_pressure"] = new_val
 
     @property
-    def porosity_min(self):
+    def porosity_min(self) -> float:
         return self._compaction_params["porosity_min"]
 
     @porosity_min.setter
-    def porosity_min(self, new_val):
+    def porosity_min(self, new_val: float):
         if 0.0 <= new_val <= 1.0:
             self._compaction_params["porosity_min"] = new_val
         else:
             raise ValueError("porosity_min must be between [0, 1]")
 
     @property
-    def porosity_max(self):
+    def porosity_max(self) -> float:
         return self._compaction_params["porosity_max"]
 
     @porosity_max.setter
-    def porosity_max(self, new_val):
+    def porosity_max(self, new_val: float):
         if 0.0 <= new_val <= 1.0:
             self._compaction_params["porosity_max"] = new_val
         else:
             raise ValueError("porosity_max must be between [0, 1]")
 
     @property
-    def rho_void(self):
+    def rho_void(self) -> float:
         return self._compaction_params["rho_void"]
 
     @rho_void.setter
-    def rho_void(self, new_val):
+    def rho_void(self, new_val: float):
         if new_val > 0.0:
             self._compaction_params["rho_void"] = new_val
         else:
             raise ValueError("rho_void must be positive")
 
     @property
-    def gravity(self):
+    def gravity(self) -> float:
         return self._compaction_params["gravity"]
 
     @gravity.setter
-    def gravity(self, new_val):
+    def gravity(self, new_val: float):
         if new_val > 0.0:
             self._compaction_params["gravity"] = new_val
         else:
