@@ -53,5 +53,5 @@ install:
 script:
 - pip install -r requirements-testing.txt
 - pip install pytest pytest-cov pytest-datadir pytest-benchmark coveralls
-- pytest -vvv --cov=compaction --cov-report=xml:$(pwd)/coverage.xml
+- pytest -vvv --cov=compaction --cov-report=xml:$(pwd)/coverage.xml --mypy
 after_success: coveralls
