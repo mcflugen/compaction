@@ -29,10 +29,10 @@ def test_content(response):
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
-    result = runner.invoke(cli.main, ["--help"])
+    result = runner.invoke(cli.compact, ["--help"])
     assert result.exit_code == 0
 
-    result = runner.invoke(cli.main, ["--version"])
+    result = runner.invoke(cli.compact, ["--version"])
     assert result.exit_code == 0
     assert "version" in result.output
 
@@ -41,7 +41,7 @@ def test_dry_run(tmpdir, datadir):
     with tmpdir.as_cwd():
         runner = CliRunner()
         result = runner.invoke(
-            cli.main,
+            cli.run,
             [
                 "--dry-run",
                 "--config={0}".format(datadir / "config.yaml"),
@@ -58,7 +58,7 @@ def test_verbose(tmpdir, datadir):
     with tmpdir.as_cwd():
         runner = CliRunner()
         result = runner.invoke(
-            cli.main,
+            cli.run,
             [
                 "--verbose",
                 "--config={0}".format(datadir / "config.yaml"),
@@ -81,7 +81,7 @@ def test_constant_porosity(tmpdir, datadir):
     with tmpdir.as_cwd():
         runner = CliRunner()
         result = runner.invoke(
-            cli.main,
+            cli.run,
             [
                 "--config={0}".format(datadir / "config.yaml"),
                 str(datadir / "porosity_profile.txt"),
