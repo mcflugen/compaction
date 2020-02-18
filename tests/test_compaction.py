@@ -1,15 +1,15 @@
 """Unit tests for compaction."""
-import numpy as np
-import pandas
+import numpy as np  # type: ignore
+import pandas  # type: ignore
 import yaml
-from pytest import approx, mark
+from pytest import approx, mark  # type: ignore
 from six import StringIO
 
 from compaction import compact
 from compaction.cli import load_config, run_compaction
 
 
-def test_to_analytical():
+def test_to_analytical() -> None:
     c = 3.68e-8
     rho_s = 2650.0
     rho_w = 1000.0
@@ -40,7 +40,7 @@ def test_to_analytical():
     assert sup_norm < 0.01
 
 
-def test_spatially_distributed():
+def test_spatially_distributed() -> None:
     """Test with spatially distributed inputs."""
     dz = np.full((100, 10), 1.0)
     phi = np.full((100, 10), 0.5)
@@ -53,7 +53,7 @@ def test_spatially_distributed():
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
 @mark.benchmark(group="compaction")
-def test_grid_size(benchmark, size):
+def test_grid_size(benchmark, size) -> None:
     dz = np.full((size, 100), 1.0)
     phi = np.full((size, 100), 0.5)
     phi_new = compact(dz, phi, porosity_max=0.5)
@@ -67,7 +67,7 @@ def test_grid_size(benchmark, size):
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
 @mark.benchmark(group="compaction-with-dz")
-def test_grid_size_with_dz(benchmark, size):
+def test_grid_size_with_dz(benchmark, size) -> None:
     dz = np.full((size, 100), 1.0)
     phi = np.full((size, 100), 0.5)
     phi_new = compact(dz, phi, porosity_max=0.5)
@@ -83,7 +83,7 @@ def test_grid_size_with_dz(benchmark, size):
     assert np.all(np.diff(dz_new, axis=0) < 0.0)
 
 
-def test_decreasing_porosity():
+def test_decreasing_porosity() -> None:
     """Test porosity decreases with depth."""
     dz = np.full(100, 1.0)
     phi = np.full(100, 0.5)
@@ -94,7 +94,7 @@ def test_decreasing_porosity():
     assert np.all(np.diff(phi_new) < 0.0)
 
 
-def test_equilibrium_compaction():
+def test_equilibrium_compaction() -> None:
     """Test steady-state compaction."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
@@ -107,7 +107,7 @@ def test_equilibrium_compaction():
     assert np.all(phi_2 == approx(phi_1))
 
 
-def test_no_decompaction():
+def test_no_decompaction() -> None:
     """Test removing sediment does not cause decompaction."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
@@ -120,7 +120,7 @@ def test_no_decompaction():
     assert np.all(phi_2 == approx(phi_1))
 
 
-def test_increasing_load():
+def test_increasing_load() -> None:
     """Test adding sediment increases compaction."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
@@ -133,7 +133,7 @@ def test_increasing_load():
     assert np.all(phi_2[1:] < phi_1[1:])
 
 
-def test_zero_compaction():
+def test_zero_compaction() -> None:
     """Test compaction coefficient of zero."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
@@ -142,7 +142,7 @@ def test_zero_compaction():
     assert np.all(phi_1 == approx(phi_0))
 
 
-def test_increasing_compactability():
+def test_increasing_compactability() -> None:
     """Test large compaction coefficient leads to more compaction."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
@@ -152,7 +152,7 @@ def test_increasing_compactability():
     assert np.all(phi_2[1:] < phi_1[1:])
 
 
-def test_void_is_air():
+def test_void_is_air() -> None:
     """Test empty void space."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
@@ -162,7 +162,7 @@ def test_void_is_air():
     assert np.all(phi_1[1:] < phi_2[1:])
 
 
-def test_load_config_defaults():
+def test_load_config_defaults() -> None:
     """Test load_config without file name."""
     config = load_config()
     defaults = {
@@ -175,7 +175,7 @@ def test_load_config_defaults():
     assert config == defaults
 
 
-def test_load_config_from_file():
+def test_load_config_from_file() -> None:
     """Test config vars from a file."""
     file_like = StringIO()
     yaml.dump(dict(c=3.14), file_like)
@@ -192,7 +192,7 @@ def test_load_config_from_file():
     assert config == expected
 
 
-def test_run():
+def test_run() -> None:
     """Test running compaction with file-like objects."""
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)

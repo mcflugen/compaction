@@ -1,20 +1,22 @@
 #! /usr/bin/env python
+from typing import Union, Tuple
+
 import numpy as np
 from scipy.constants import g
 
 
 def compact(
-    dz,
-    porosity,
-    c=5e-8,
-    rho_grain=2650.0,
-    excess_pressure=0.0,
-    porosity_min=0.0,
-    porosity_max=1.0,
-    rho_void=1000.0,
-    gravity=g,
-    return_dz=False,
-):
+    dz: np.ndarray,
+    porosity: np.ndarray,
+    c: float = 5e-8,
+    rho_grain: float = 2650.0,
+    excess_pressure: float = 0.0,
+    porosity_min: float = 0.0,
+    porosity_max: float = 1.0,
+    rho_void: float = 1000.0,
+    gravity: float = g,
+    return_dz: bool = False,
+) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
     """Compact a column of sediment.
 
     Parameters

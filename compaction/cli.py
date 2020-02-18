@@ -1,7 +1,8 @@
 import sys
+from typing import TextIO, Optional
 
 import click
-import pandas
+import pandas  # type: ignore
 import yaml
 
 from ._version import get_versions
@@ -11,7 +12,7 @@ __version__ = get_versions()["version"]
 del get_versions
 
 
-def load_config(file=None):
+def load_config(file: Optional[TextIO] = None):
     """Load compaction config file.
 
     Parameters
@@ -37,7 +38,11 @@ def load_config(file=None):
     return conf
 
 
-def run_compaction(input=None, output=None, **kwds):
+def run_compaction(
+    input: Optional[TextIO] = None,
+    output: Optional[TextIO] = None,
+    **kwds
+) -> None:
     input = input or sys.stdin
     output = output or sys.stdout
 
@@ -60,7 +65,8 @@ def run_compaction(input=None, output=None, **kwds):
 )
 @click.argument("input", type=click.File(mode="r"))
 @click.argument("output", default="-", type=click.File(mode="w"))
-def main(input, output, config, dry_run, verbose):
+def main(
+    input: TextIO, output: TextIO, config: TextIO, dry_run: bool, verbose: bool):
 
     params = load_config(config)
     if verbose:
