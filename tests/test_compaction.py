@@ -201,7 +201,7 @@ def test_run():
     input = StringIO()
     output = StringIO()
 
-    df = pandas.DataFrame.from_items([("dz", dz_0), ("porosity", phi_0)])
+    df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
     df.to_csv(input, index=False, header=False)
 
     input.seek(0)
