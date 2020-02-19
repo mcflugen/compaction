@@ -155,7 +155,7 @@ def test_run_to_stdin(tmpdir, datadir):
         )
         assert result.exit_code == 0
 
-        assert result.stdout == actual
+        assert result.stdout.splitlines() == actual.splitlines()
 
 
 def test_setup(tmpdir):
