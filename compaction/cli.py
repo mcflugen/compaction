@@ -36,7 +36,7 @@ def load_config(file: Optional[TextIO] = None):
     conf = {
         "c": 5e-8,
         "porosity_min": 0.0,
-        "porosity_max": 1.0,
+        "porosity_max": 0.5,
         "rho_grain": 2650.0,
         "rho_void": 1000.0,
     }
@@ -57,7 +57,7 @@ def _contents_of_input_file(infile: str) -> str:
     contents = {
         "config": yaml.dump(params, default_flow_style=False),
         "porosity": as_csv(
-            [[1.0, 0.4], [1.0, 0.4], [1.0, 0.2]],
+            [[100.0, 0.5], [100.0, 0.5], [100.0, 0.5]],
             header="Layer Thickness [m], Porosity [-]",
         ),
     }
@@ -73,9 +73,8 @@ def run_compaction(
 
     init = pandas.read_csv(src, names=("dz", "porosity"), dtype=float, comment="#")
 
-    porosity_new = _compact(init.dz.values, init.porosity.values, **kwds)
-
-    dz_new = init.dz * (1 - init.porosity) / (1 - porosity_new)
+    dz_new = np.empty_like(init.dz)
+    porosity_new = _compact(init.dz.values, init.porosity.values, return_dz=dz_new, **kwds)
 
     out = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
     out.to_csv(dest, index=False, header=False)
