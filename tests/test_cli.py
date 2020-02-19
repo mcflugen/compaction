@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import filecmp
 import os
 
 import pandas  # type: ignore
@@ -95,6 +96,62 @@ def test_constant_porosity(tmpdir, datadir):
         phi_actual = pandas.read_csv("out.txt", names=("dz", "porosity"), dtype=float)
 
     assert_array_almost_equal(phi_actual["porosity"], phi_expected)
+
+
+def test_run_from_stdin(tmpdir, datadir):
+    path_to_porosity = str(datadir / "porosity_profile.txt")
+    with open(path_to_porosity) as fp:
+        porosity_profile = fp.read()
+
+    runner = CliRunner(mix_stderr=False)
+
+    with tmpdir.as_cwd():
+        result = runner.invoke(
+            cli.run, [
+                "--config={0}".format(datadir / "config.yaml"),
+                path_to_porosity,
+                "expected.txt",
+            ],
+        )
+        assert result.exit_code == 0
+
+        result = runner.invoke(
+            cli.run,
+            ["--config={0}".format(datadir / "config.yaml"), "-", "actual.txt"],
+            input=porosity_profile,
+        )
+        assert result.exit_code == 0
+
+        assert filecmp.cmp("actual.txt", "expected.txt")
+
+
+def test_run_to_stdin(tmpdir, datadir):
+    path_to_porosity = str(datadir / "porosity_profile.txt")
+
+    runner = CliRunner(mix_stderr=False)
+
+    with tmpdir.as_cwd():
+        result = runner.invoke(
+            cli.run, [
+                "--config={0}".format(datadir / "config.yaml"),
+                path_to_porosity,
+                "actual.txt",
+            ],
+        )
+        assert result.exit_code == 0
+        with open("actual.txt") as fp:
+            actual = fp.read()
+
+        runner = CliRunner(mix_stderr=False)
+        result = runner.invoke(
+            cli.run, [
+                "--config={0}".format(datadir / "config.yaml"),
+                path_to_porosity,
+            ],
+        )
+        assert result.exit_code == 0
+
+        assert result.stdout == actual
 
 
 def test_setup(tmpdir):
