@@ -104,9 +104,6 @@ def compact() -> None:
 @click.version_option(version=__version__)
 @click.option("-v", "--verbose", is_flag=True, help="Emit status messages to stderr.")
 @click.option("--dry-run", is_flag=True, help="Do not actually run the model")
-# @click.option(
-#     "--config", default="config.yaml", type=click.File(mode="r"), help="Configuration file"
-# )
 @click.option(
     "--config",
     type=click.Path(
@@ -118,7 +115,6 @@ def compact() -> None:
 )
 @click.argument("src", type=click.File(mode="r"))
 @click.argument("dest", default="-", type=click.File(mode="w"))
-# @click.argument("dest", type=click.File(mode="w"))
 def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) -> None:
     """Run a simulation."""
     try:

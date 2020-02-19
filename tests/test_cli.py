@@ -12,22 +12,6 @@ from numpy.testing import assert_array_almost_equal  # type: ignore
 from compaction import cli, compact
 
 
-@pytest.fixture
-def response():
-    """Sample pytest fixture.
-
-    See more at: http://doc.pytest.org/en/latest/fixture.html
-    """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
-
-
-def test_content(response):
-    """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
-
-
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner(mix_stderr=False)
@@ -129,7 +113,7 @@ def test_run_from_stdin(tmpdir, datadir):
         assert filecmp.cmp("actual.txt", "expected.txt")
 
 
-def test_run_to_stdin(tmpdir, datadir):
+def test_run_to_stdout(tmpdir, datadir):
     path_to_porosity = str(datadir / "porosity_profile.txt")
 
     runner = CliRunner(mix_stderr=False)
@@ -139,12 +123,13 @@ def test_run_to_stdin(tmpdir, datadir):
             cli.run, [
                 "--config={0}".format(datadir / "config.yaml"),
                 path_to_porosity,
-                "actual.txt",
+                "expected.txt",
             ],
         )
         assert result.exit_code == 0
-        with open("actual.txt") as fp:
-            actual = fp.read()
+        with open("expected.txt") as fp:
+            expected = fp.read()
+        expected_lines = [line.strip() for line in expected.splitlines() if line]
 
         runner = CliRunner(mix_stderr=False)
         result = runner.invoke(
@@ -154,8 +139,9 @@ def test_run_to_stdin(tmpdir, datadir):
             ],
         )
         assert result.exit_code == 0
+        actual_lines = [line.strip() for line in result.stdout.splitlines() if line]
 
-        assert result.stdout.splitlines() == actual.splitlines()
+        assert actual_lines == expected_lines
 
 
 def test_setup(tmpdir):
@@ -189,10 +175,12 @@ def test_setup_with_existing_files(tmpdir, files):
 def test_show(tmpdir):
     with tmpdir.as_cwd():
         result = CliRunner(mix_stderr=False).invoke(cli.show, ["config"])
+        assert result.exit_code == 0
         with open("config.yaml", "w") as fp:
             fp.write(result.stdout)
 
         result = CliRunner(mix_stderr=False).invoke(cli.show, ["porosity"])
+        assert result.exit_code == 0
         with open("porosity.csv", "w") as fp:
             fp.write(result.stdout)
 
