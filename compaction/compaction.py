@@ -65,7 +65,14 @@ def compact(
 
     if return_dz is not None:
         if return_dz.dtype is dz.dtype and return_dz.shape == dz.shape:
-            return_dz[:] = dz * (1.0 - porosity) / (1.0 - porosity_new)
+            contains_sediment = porosity_new < 1.0
+            np.divide(
+                dz * (1.0 - porosity),
+                1.0 - porosity_new,
+                where=contains_sediment,
+                out=return_dz,
+            )
+            return_dz[~contains_sediment] = 0.0
         else:
             raise TypeError(
                 "size and shape of return_dz ({0}, {1}) must be that of dz ({2}, {3})".format(
