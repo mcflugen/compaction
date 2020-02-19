@@ -176,13 +176,24 @@ def test_void_is_air() -> None:
     assert np.all(phi_1[1:] < phi_2[1:])
 
 
+def test_all_void() -> None:
+    dz_0 = np.full(100, 1000.0)
+    phi_0 = np.full(100, 1.0)
+
+    dz_1 = np.empty_like(dz_0)
+    phi_1 = compact(dz_0, phi_0, return_dz=dz_1)
+
+    assert np.all(dz_1 == approx(0.0))
+    assert np.all(phi_1 == approx(1.0))
+
+
 def test_load_config_defaults() -> None:
     """Test load_config without file name."""
     config = load_config()
     defaults = {
         "c": 5e-8,
         "porosity_min": 0.0,
-        "porosity_max": 1.0,
+        "porosity_max": 0.5,
         "rho_grain": 2650.0,
         "rho_void": 1000.0,
     }
@@ -199,7 +210,7 @@ def test_load_config_from_file() -> None:
     expected = {
         "c": 3.14,
         "porosity_min": 0.0,
-        "porosity_max": 1.0,
+        "porosity_max": 0.5,
         "rho_grain": 2650.0,
         "rho_void": 1000.0,
     }
