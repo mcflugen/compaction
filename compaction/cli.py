@@ -121,8 +121,17 @@ def compact() -> None:
 # @click.argument("dest", type=click.File(mode="w"))
 def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) -> None:
     """Run a simulation."""
+    try:
+        from_stdin = src.name == "<stdin>"
+    except AttributeError:
+        from_stdin = True
+    try:
+        from_stdout = dest.name == "<stdout>"
+    except AttributeError:
+        from_stdout = True
+
     config_path = pathlib.Path(config)
-    if src.name == "<stdin>":
+    if from_stdin:
         rundir = pathlib.Path(".")
     else:
         rundir = pathlib.Path(src.name).parent.resolve()
@@ -139,7 +148,7 @@ def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) ->
         run_compaction(src, dest, **params)
 
         out("💥 Finished! 💥")
-        out("Output written to {0}".format(dest.name))
+        out("Output written to {0}".format("<stdout>" if from_stdout else dest.name))
 
     sys.exit(0)
 
