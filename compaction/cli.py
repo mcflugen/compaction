@@ -97,7 +97,7 @@ def compact() -> None:
 
         $ compact run compact-example/porosity.csv
     """
-    pass
+    pass  # pragma: no cover
 
 
 @compact.command()
