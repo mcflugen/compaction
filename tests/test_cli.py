@@ -30,13 +30,17 @@ def test_content(response):
 
 def test_command_line_interface():
     """Test the CLI."""
-    runner = CliRunner()
+    runner = CliRunner(mix_stderr=False)
     result = runner.invoke(cli.compact, ["--help"])
     assert result.exit_code == 0
 
     result = runner.invoke(cli.compact, ["--version"])
     assert result.exit_code == 0
-    assert "version" in result.output
+    assert "version" in result.stdout
+
+    result = runner.invoke(cli.compact)
+    assert result.exit_code == 0
+    assert "Compact layers of sediment" in result.stdout
 
 
 def test_dry_run(tmpdir, datadir):
