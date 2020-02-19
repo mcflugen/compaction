@@ -6,7 +6,6 @@ Status](https://travis-ci.org/mcflugen/compaction.svg?branch=master)](https://tr
 [![Coverage
 Status](https://coveralls.io/repos/github/mcflugen/compaction/badge.svg?branch=mcflugen%2Fadd-unit-tests)](https://coveralls.io/github/mcflugen/compaction?branch=master)
 
-
 # compaction: Compact layers of sediment
 
 Compact a column of sediment following Bahr et al., 2001.
@@ -53,7 +52,6 @@ base *Python* installation. This can be done with *conda* as:
 To then install *Compaction* into this environment:
 
   $ pip install -e .
-
 
 ## Input Files
 
