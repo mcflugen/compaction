@@ -1,5 +1,6 @@
 import pathlib
 import sys
+from functools import partial
 from io import StringIO
 from typing import Optional, TextIO
 
@@ -13,6 +14,9 @@ from .compaction import compact as _compact
 
 __version__ = get_versions()["version"]
 del get_versions
+
+out = partial(click.secho, bold=True, err=True)
+err = partial(click.secho, fg="red", err=True)
 
 
 def load_config(file: Optional[TextIO] = None):
@@ -114,26 +118,30 @@ def compact() -> None:
 )
 @click.argument("src", type=click.File(mode="r"))
 @click.argument("dest", default="-", type=click.File(mode="w"))
+# @click.argument("dest", type=click.File(mode="w"))
 def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) -> None:
-
+    """Run a simulation."""
     config_path = pathlib.Path(config)
-    if src.name is not None:
-        rundir = pathlib.Path(src.name).parent.resolve()
-    else:
+    if src.name is "<stdin>":
         rundir = pathlib.Path(".")
+    else:
+        rundir = pathlib.Path(src.name).parent.resolve()
 
-    with open(rundir / config_path) as fp:
+    with open(rundir / config_path, "r") as fp:
         params = load_config(fp)
+
     if verbose:
-        click.secho(yaml.dump(params, default_flow_style=False), err=True)
+        out(yaml.dump(params, default_flow_style=False))
 
     if dry_run:
-        click.secho("Nothing to do. 😴", err=True, fg="green")
+        out("Nothing to do. 😴")
     else:
         run_compaction(src, dest, **params)
 
-        click.secho("💥 Finished! 💥", err=True, fg="green")
-        click.secho("Output written to {0}".format(dest.name), err=True, fg="green")
+        out("💥 Finished! 💥")
+        out("Output written to {0}".format(dest.name))
+
+    sys.exit(0)
 
 
 @compact.command()
@@ -143,7 +151,7 @@ def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) ->
 )
 def show(infile: str) -> None:
     """Show example input files."""
-    click.secho(_contents_of_input_file(infile), err=False)
+    print(_contents_of_input_file(infile))
 
 
 @compact.command()
@@ -160,14 +168,13 @@ def setup(dest: str) -> None:
     existing_files = [folder / name for name in files if (folder / name).exists()]
     if existing_files:
         for name in existing_files:
-            click.secho(
+            err(
                 f"{name}: File exists. Either remove and then rerun or choose a different destination folder",
-                err=True,
             )
     else:
         for fname in files:
             with open(folder / fname, "w") as fp:
                 print(_contents_of_input_file(fname.stem), file=fp)
-        click.secho(str(folder / "porosity.csv"), err=False)
+        print(str(folder /"porosity.csv"))
 
     sys.exit(len(existing_files))
