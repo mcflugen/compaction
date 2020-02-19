@@ -114,7 +114,7 @@ def test_setup_with_existing_files(tmpdir, files):
     runner = CliRunner(mix_stderr=False)
     with tmpdir.as_cwd():
         for name in files:
-            with open(name, "w") as fp:
+            with open(name, "w"):
                 pass
 
         result = runner.invoke(cli.setup, ["."])

@@ -122,7 +122,7 @@ def compact() -> None:
 def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) -> None:
     """Run a simulation."""
     config_path = pathlib.Path(config)
-    if src.name is "<stdin>":
+    if src.name == "<stdin>":
         rundir = pathlib.Path(".")
     else:
         rundir = pathlib.Path(src.name).parent.resolve()
@@ -146,8 +146,7 @@ def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) ->
 
 @compact.command()
 @click.argument(
-    "infile",
-    type=click.Choice(["config", "porosity"]),
+    "infile", type=click.Choice(["config", "porosity"]),
 )
 def show(infile: str) -> None:
     """Show example input files."""
@@ -156,8 +155,7 @@ def show(infile: str) -> None:
 
 @compact.command()
 @click.argument(
-    "dest",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
+    "dest", type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
 )
 def setup(dest: str) -> None:
     """Setup a folder of input files for a simulation."""
@@ -175,6 +173,6 @@ def setup(dest: str) -> None:
         for fname in files:
             with open(folder / fname, "w") as fp:
                 print(_contents_of_input_file(fname.stem), file=fp)
-        print(str(folder /"porosity.csv"))
+        print(str(folder / "porosity.csv"))
 
     sys.exit(len(existing_files))
