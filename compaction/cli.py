@@ -74,9 +74,12 @@ def run_compaction(
     init = pandas.read_csv(src, names=("dz", "porosity"), dtype=float, comment="#")
 
     dz_new = np.empty_like(init.dz)
-    porosity_new = _compact(init.dz.values, init.porosity.values, return_dz=dz_new, **kwds)
+    porosity_new = _compact(
+        init.dz.values, init.porosity.values, return_dz=dz_new, **kwds
+    )
 
     out = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
+    print("# Layer Thickness [m], Porosity [-]", file=dest)
     out.to_csv(dest, index=False, header=False)
 
 

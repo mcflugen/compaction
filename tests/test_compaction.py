@@ -233,6 +233,6 @@ def test_run() -> None:
     run_compaction(src=src, dest=dest, porosity_max=0.5)
     dest.seek(0)
 
-    data = pandas.read_csv(dest, names=("dz", "porosity"), dtype=float)
+    data = pandas.read_csv(dest, names=("dz", "porosity"), dtype=float, comment="#")
 
     assert np.all(data.porosity.values == approx(phi_1))
