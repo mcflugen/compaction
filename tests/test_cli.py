@@ -138,7 +138,7 @@ def test_run_to_stdout(tmpdir, datadir):
         runner = CliRunner(mix_stderr=False)
         result = runner.invoke(
             cli.run,
-            ["--config={0}".format(datadir / "config.yaml"), path_to_porosity,],
+            ["--config={0}".format(datadir / "config.yaml"), path_to_porosity],
         )
         assert result.exit_code == 0
         actual_lines = [line.strip() for line in result.stdout.splitlines() if line]
