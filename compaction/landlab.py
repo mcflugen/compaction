@@ -62,28 +62,27 @@ class Compact(Component):
         --------
         >>> import numpy as np
         >>> from landlab import RasterModelGrid
+
         >>> grid = RasterModelGrid((3, 5))
         >>> for layer in range(5):
         ...     grid.event_layers.add(100.0, porosity=0.7)
+
         >>> compact = Compact(grid, porosity_min=0.1, porosity_max=0.7)
-        >>> compact.run_one_step().event_layers["porosity"] # doctest: +ELLIPSIS
-        array([[ 0.7       ,  0.7       ,  0.7       ],
-                 ...
-               [ 0.        ,  0.        ,  0.        ]])
+        >>> compact.run_one_step()
+        RasterModelGrid((3, 5), xy_spacing=(1.0, 1.0), xy_of_lower_left=(0.0, 0.0))
+
         >>> compact.grid.event_layers["porosity"] < 0.7
-        array([[False, False, False],
+        array([[ True,  True,  True],
                [ True,  True,  True],
                [ True,  True,  True],
                [ True,  True,  True],
-               [ True,  True,  True],
-               [ True,  True,  True]], dtype=bool)
+               [False, False, False]], dtype=bool)
         >>> compact.grid.event_layers.dz < 100.0
-        array([[False, False, False],
+        array([[ True,  True,  True],
                [ True,  True,  True],
                [ True,  True,  True],
                [ True,  True,  True],
-               [ True,  True,  True],
-               [ True,  True,  True]], dtype=bool)
+               [False, False, False]], dtype=bool)
         """
         self._compaction_params: Dict[str, float] = {}
 
@@ -97,16 +96,14 @@ class Compact(Component):
         self.rho_void = rho_void
         self.gravity = gravity
 
-        grid.event_layers.add(0.0, porosity=0.0)
+    def run_one_step(self, dt=None):
+        if self.grid.event_layers.number_of_layers == 0:
+            return self.grid
 
-    def run_one_step(self):
-        dz = self._grid.event_layers.dz
-        porosity = self._grid.event_layers["porosity"]
+        dz = self._grid.event_layers.dz[-1::-1, :]
+        porosity = self._grid.event_layers["porosity"][-1::-1, :]
 
-        porosity_new = compact(dz, porosity, **self._compaction_params)
-
-        dz[:] = dz * (1 - porosity) / (1 - porosity_new)
-        porosity[:] = porosity_new
+        porosity[:] = compact(dz, porosity, return_dz=dz, **self._compaction_params)
 
         return self.grid
 

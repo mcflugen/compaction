@@ -41,7 +41,7 @@ in *requirements-testing.txt*.
 
 ## Installation
 
-To install *Compaction* from source, first create a new environment in
+To install *Compaction*, first create a new environment in
 which *Compaction* will be installed. This, although not necessary, will
 isolate the installation so that there won't be conflicts with your
 base *Python* installation. This can be done with *conda* as:
@@ -49,9 +49,24 @@ base *Python* installation. This can be done with *conda* as:
     $ conda create -n compaction python=3
     $ conda activate compaction
 
-To then install *Compaction* into this environment:
+## Stable Release
 
-  $ pip install -e .
+*Compaction*, and its dependencies, can be installed either with *pip*
+or *conda*. Using *pip*:
+
+    $ pip install compaction
+
+Using *conda*:
+
+    $ conda install compaction -c conda-forge
+
+### From Source
+
+After downloading the *Compaction* source code, run the following from
+*Compaction*'s top-level folder (the one that contains *setup.py*) to
+install *Compaction* into the current environment:
+
+    $ pip install -e .
 
 ## Input Files
 
@@ -97,6 +112,7 @@ need to create a set of sample files:
 You can now run the simulation:
 
     $ sequence run example/sequence.yaml
+    # Layer Thickness [m], Porosity [-]
     100.0,0.5
     96.18666488709239,0.4801774231522433
     92.78860257194452,0.4611407154102571

@@ -2,9 +2,9 @@
 import filecmp
 import os
 
+import numpy as np  # type: ignore
 import pandas  # type: ignore
 import pytest  # type: ignore
-import numpy as np  # type: ignore
 import yaml
 from click.testing import CliRunner
 from numpy.testing import assert_array_almost_equal  # type: ignore
@@ -81,7 +81,9 @@ def test_constant_porosity(tmpdir, datadir):
 
         assert result.exit_code == 0
         assert "Output written to out.txt" in result.stderr
-        phi_actual = pandas.read_csv("out.txt", names=("dz", "porosity"), dtype=float)
+        phi_actual = pandas.read_csv(
+            "out.txt", names=("dz", "porosity"), dtype=float, comment="#"
+        )
 
     assert_array_almost_equal(phi_actual["porosity"], phi_expected)
 
@@ -95,7 +97,8 @@ def test_run_from_stdin(tmpdir, datadir):
 
     with tmpdir.as_cwd():
         result = runner.invoke(
-            cli.run, [
+            cli.run,
+            [
                 "--config={0}".format(datadir / "config.yaml"),
                 path_to_porosity,
                 "expected.txt",
@@ -120,7 +123,8 @@ def test_run_to_stdout(tmpdir, datadir):
 
     with tmpdir.as_cwd():
         result = runner.invoke(
-            cli.run, [
+            cli.run,
+            [
                 "--config={0}".format(datadir / "config.yaml"),
                 path_to_porosity,
                 "expected.txt",
@@ -133,10 +137,8 @@ def test_run_to_stdout(tmpdir, datadir):
 
         runner = CliRunner(mix_stderr=False)
         result = runner.invoke(
-            cli.run, [
-                "--config={0}".format(datadir / "config.yaml"),
-                path_to_porosity,
-            ],
+            cli.run,
+            ["--config={0}".format(datadir / "config.yaml"), path_to_porosity],
         )
         assert result.exit_code == 0
         actual_lines = [line.strip() for line in result.stdout.splitlines() if line]
@@ -184,7 +186,9 @@ def test_show(tmpdir):
         with open("porosity.csv", "w") as fp:
             fp.write(result.stdout)
 
-        result = CliRunner(mix_stderr=False).invoke(cli.run, ["porosity.csv", "out.csv"])
+        result = CliRunner(mix_stderr=False).invoke(
+            cli.run, ["porosity.csv", "out.csv"]
+        )
 
         assert (tmpdir / "out.csv").exists()
         assert result.exit_code == 0
