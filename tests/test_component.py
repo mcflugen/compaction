@@ -23,14 +23,14 @@ def test_matches_module(grid):
     compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
     compact.calculate()
 
-    assert_array_almost_equal(grid.event_layers["porosity"][:-1, :], phi_expected)
+    assert_array_almost_equal(grid.event_layers["porosity"][-1::-1, :], phi_expected)
 
 
 def test_init_without_layers_added(grid):
     compact = Compact(grid)
     compact.run_one_step()
-
-    assert grid.event_layers.dz == approx(0.0)
+    assert grid.event_layers.number_of_layers == 0
+    # assert grid.event_layers.dz == approx(0.0)
 
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
@@ -43,11 +43,11 @@ def test_grid_size(benchmark, size):
     compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
     benchmark(compact.calculate)
 
-    assert np.all(grid.event_layers["porosity"][1:] < 0.5)
-    assert grid.event_layers["porosity"][0] == approx(0.5)
+    assert np.all(grid.event_layers["porosity"][:-1] < 0.5)
+    assert grid.event_layers["porosity"][-1] == approx(0.5)
 
-    assert np.all(grid.event_layers.dz[0] == approx(1.0))
-    assert np.all(grid.event_layers.dz[1:] < 1.0)
+    assert np.all(grid.event_layers.dz[-1] == approx(1.0))
+    assert np.all(grid.event_layers.dz[:-1] < 1.0)
 
 
 def test_init_with_layers_added(grid):
@@ -56,11 +56,11 @@ def test_init_with_layers_added(grid):
     compact = Compact(grid, porosity_min=0.1, porosity_max=0.7)
     compact.run_one_step()
 
-    assert np.all(grid.event_layers["porosity"][1:] < 0.7)
-    assert grid.event_layers["porosity"][0] == approx(0.7)
+    assert np.all(grid.event_layers["porosity"][:-1] < 0.7)
+    assert grid.event_layers["porosity"][-1] == approx(0.7)
 
-    assert np.all(grid.event_layers.dz[0] == approx(100.0))
-    assert np.all(grid.event_layers.dz[1:] < 100.0)
+    assert np.all(grid.event_layers.dz[-1] == approx(100.0))
+    assert np.all(grid.event_layers.dz[:-1] < 100.0)
 
 
 def test_layers_compact_evenly(grid):
