@@ -1,3 +1,4 @@
 include versioneer.py
 include compaction/_version.py
 include LICENSE
+include requirements.txt
