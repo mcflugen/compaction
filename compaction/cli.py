@@ -1,5 +1,7 @@
+import os
 import pathlib
 import sys
+import warnings
 from functools import partial
 from io import StringIO
 from typing import Optional, TextIO
@@ -7,7 +9,7 @@ from typing import Optional, TextIO
 import click
 import numpy as np  # type: ignore
 import pandas  # type: ignore
-import yaml
+import tomlkit as toml
 
 from .compaction import compact as _compact
 
@@ -16,12 +18,43 @@ out = partial(click.secho, bold=True, err=True)
 err = partial(click.secho, fg="red", err=True)
 
 
-def load_config(file: Optional[TextIO] = None):
+def _tomlkit_to_popo(d):
+    try:
+        result = getattr(d, "value")
+    except AttributeError:
+        result = d
+
+    if isinstance(result, list):
+        result = [_tomlkit_to_popo(x) for x in result]
+    elif isinstance(result, dict):
+        result = {
+            _tomlkit_to_popo(key): _tomlkit_to_popo(val) for key, val in result.items()
+        }
+    elif isinstance(result, toml.items.Integer):
+        result = int(result)
+    elif isinstance(result, toml.items.Float):
+        result = float(result)
+    elif isinstance(result, (toml.items.String, str)):
+        result = str(result)
+    elif isinstance(result, (toml.items.Bool, bool)):
+        result = bool(result)
+    else:
+        if not isinstance(result, (int, float, str, bool)):
+            warnings.warn(
+                "unexpected type ({0!r}) encountered when converting toml to a dict".format(
+                    result.__class__.__name__
+                )
+            )
+
+    return result
+
+
+def load_config(stream: Optional[TextIO] = None):
     """Load compaction config file.
 
     Parameters
     ----------
-    fname : file-like, optional
+    stream : file-like, optional
         Opened config file or ``None``. If ``None``, return default
         values.
 
@@ -31,15 +64,20 @@ def load_config(file: Optional[TextIO] = None):
         Config parameters.
     """
     conf = {
-        "c": 5e-8,
-        "porosity_min": 0.0,
-        "porosity_max": 0.5,
-        "rho_grain": 2650.0,
-        "rho_void": 1000.0,
+        "compact" : {
+            "constants": {
+                "c": 5e-8,
+                "porosity_min": 0.0,
+                "porosity_max": 0.5,
+                "rho_grain": 2650.0,
+                "rho_void": 1000.0,
+            }
+        }
     }
-    if file is not None:
-        conf.update(yaml.safe_load(file))
-    return conf
+    if stream is not None:
+        conf.update(toml.parse(stream.read()))
+
+    return _tomlkit_to_popo(conf).pop("compact")
 
 
 def _contents_of_input_file(infile: str) -> str:
@@ -52,8 +90,8 @@ def _contents_of_input_file(infile: str) -> str:
         return contents
 
     contents = {
-        "config": yaml.dump(params, default_flow_style=False),
-        "porosity": as_csv(
+        "compact.toml": toml.dumps(dict(compact=params)),
+        "porosity.csv": as_csv(
             [[100.0, 0.5], [100.0, 0.5], [100.0, 0.5]],
             header="Layer Thickness [m], Porosity [-]",
         ),
@@ -75,14 +113,20 @@ def run_compaction(
         init.dz.values, init.porosity.values, return_dz=dz_new, **kwds
     )
 
-    out = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
+    result = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
     print("# Layer Thickness [m], Porosity [-]", file=dest)
-    out.to_csv(dest, index=False, header=False)
+    result.to_csv(dest, index=False, header=False)
 
 
-@click.group()
+@click.group(chain=True)
 @click.version_option()
-def compact() -> None:
+@click.option(
+    "--cd",
+    default=".",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
+    help="chage to directory, then execute",
+)
+def compact(cd) -> None:
     """Compact layers of sediment.
 
     \b
@@ -90,93 +134,63 @@ def compact() -> None:
 
       Create a folder with example input files,
 
-        $ compact setup compact-example
+        $ mkdir compaction-example && cd compaction-example
+        $ compact setup
 
       Run a simulation using the examples input files,
 
-        $ compact run compact-example/porosity.csv
+        $ compact run
     """
-    pass  # pragma: no cover
+    os.chdir(cd)
 
 
 @compact.command()
 @click.version_option()
 @click.option("-v", "--verbose", is_flag=True, help="Emit status messages to stderr.")
 @click.option("--dry-run", is_flag=True, help="Do not actually run the model")
-@click.option(
-    "--config",
-    type=click.Path(
-        exists=False, file_okay=True, dir_okay=False, readable=True, allow_dash=False
-    ),
-    default="config.yaml",
-    is_eager=True,
-    help="Read configuration from PATH.",
-)
-@click.argument("src", type=click.File(mode="r"))
-@click.argument("dest", default="-", type=click.File(mode="w"))
-def run(src: TextIO, dest: TextIO, config: str, dry_run: bool, verbose: bool) -> None:
+def run(dry_run: bool, verbose: bool) -> None:
     """Run a simulation."""
-    try:
-        from_stdin = src.name == "<stdin>"
-    except AttributeError:
-        from_stdin = True
-    try:
-        from_stdout = dest.name == "<stdout>"
-    except AttributeError:
-        from_stdout = True
-
-    config_path = pathlib.Path(config)
-    if from_stdin:
-        rundir = pathlib.Path(".")
-    else:
-        rundir = pathlib.Path(src.name).parent.resolve()
-
-    with open(rundir / config_path, "r") as fp:
+    with open("compact.toml", "r") as fp:
         params = load_config(fp)
 
     if verbose:
-        out(yaml.dump(params, default_flow_style=False))
+        out(toml.dumps(params))
 
     if dry_run:
         out("Nothing to do. 😴")
     else:
-        run_compaction(src, dest, **params)
+        with open("porosity-out.csv", "w") as dest:
+            run_compaction("porosity.csv", dest, **params["constants"])
 
         out("💥 Finished! 💥")
-        out("Output written to {0}".format("<stdout>" if from_stdout else dest.name))
-
-    sys.exit(0)
+        out("Output written to {0}".format("porosity-out.csv"))
 
 
 @compact.command()
 @click.argument(
-    "infile", type=click.Choice(["config", "porosity"]),
+    "infile", type=click.Choice(["compact.toml", "porosity.csv"]),
 )
-def show(infile: str) -> None:
+def generate(infile: str) -> None:
     """Show example input files."""
     print(_contents_of_input_file(infile))
 
 
 @compact.command()
-@click.argument(
-    "dest", type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
-)
-def setup(dest: str) -> None:
+def setup() -> None:
     """Setup a folder of input files for a simulation."""
-    folder = pathlib.Path(dest)
+    files = [pathlib.Path(fname) for fname in ["porosity.csv", "compact.toml"]]
 
-    files = [pathlib.Path(fname) for fname in ["porosity.csv", "config.yaml"]]
-
-    existing_files = [folder / name for name in files if (folder / name).exists()]
+    existing_files = [str(file_) for file_ in files if file_.exists()]
     if existing_files:
         for name in existing_files:
             err(
                 f"{name}: File exists. Either remove and then rerun or choose a different destination folder",
             )
     else:
-        for fname in files:
-            with open(folder / fname, "w") as fp:
-                print(_contents_of_input_file(fname.stem), file=fp)
-        print(str(folder / "porosity.csv"))
+        for file_ in files:
+            with open(file_, "w") as fp:
+                print(_contents_of_input_file(file_.name), file=fp)
+        print(pathlib.Path.cwd())
 
-    sys.exit(len(existing_files))
+    if existing_files:
+        sys.exit(len(existing_files))
