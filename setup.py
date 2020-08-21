@@ -1,7 +1,5 @@
 from setuptools import setup, find_packages
 
-import versioneer
-
 
 setup(
     name="compaction",
@@ -20,6 +18,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Physics",
     ],
+    keywords=["landlab"],
     install_requires=open("requirements.txt", "r").read().splitlines(),
     setup_requires=[],
     packages=find_packages(),
@@ -27,6 +26,5 @@ setup(
         "console_scripts": ["compact=compaction.cli:compact"],
         "landlab.components": ["Compact=compaction.landlab:Compact"],
     },
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version="v0.3.0.dev0",
 )
