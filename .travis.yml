@@ -8,8 +8,6 @@ env:
   - PYTHON="3.7"
   - PYTHON="3.6"
   global:
-  - CONDA_PREFIX=$HOME/miniconda
-  - MINICONDA_URL_BASE="https://repo.continuum.io/miniconda/Miniconda3-latest"
   - secure: If5+q1H1EQwEZrhYvQAGoYBaVTu1Bfkw+J5OrIY5CanuhLExXK1CLVHMKML2sZdMEHIOGhBYaeUqHlEVbvP94Wb8RobfL4NT5FjOfXk9zbiT3vRdAbgJzCVy2ervx6m4acZcnrn0LCu6FQW294M7DUEK77ZQJToj3Qy0ypWDwzijAN/wWD5NZWc8Kndg2yH76qBXCQO79S242/gryPq83dbjwVW79+uUCsmhKsV5r8MIKib0Xm6zbd8a5qLsSveTNlx6zNMaVadkZM6r7mKt6mk6pEZxuL8GWWUo0SntZCW3FNncO9SrTfC2uOsBRF3BWDIWZHVqcedkdahNsOkVr95rYk+XjeKj0alWY8RsBwGl1XWMIJAFEQdgVfy+wvccOB41ZZXwICaT8TKKGpY/Za97DJF1g6rU/PCojA578YCyBjrqng5X7nQh9FBS74VpItt2oHE3KnAwyTrcboatXL2z1lpeHenAK8+rijYzLY288MMzTXw4risaPEI32QxGtPlzymDCbIAJqi3tZ5dTRTbffEmSjmRp3aBer0gY2qajq7uKo4TLiqhOIpWeQZA/ncF2PUqbkFtkd9ZejcZakUoAZ8wsAhfUTvebVsWMf7A7g1BKrStNdlo8OnNX0soIMLUSzGACag8khHUOdSKYEEtxMQC2wW5diq3VC36HbKs=
 sudo: false
 jobs:
@@ -34,22 +32,23 @@ before_install:
     brew cleanup -s
     rm -rf $(brew --cache)
   fi
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    curl -L https://micromamba.snakepit.net/api/micromamba/osx-64/latest | tar -xvj bin/micromamba
+  else
+    curl -L https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+  fi
+- ./bin/micromamba shell init -s bash -p ~/micromamba
 - |
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    OS="MacOSX-x86_64"
+    source $HOME/.bash_profile
   else
-    OS="Linux-x86_64"
+    source $HOME/.bashrc
   fi
-- curl $MINICONDA_URL_BASE-$OS.sh > $HOME/minconda.sh
-- bash $HOME/minconda.sh -b -p $CONDA_PREFIX
-- export PATH="$CONDA_PREFIX/bin:$PATH"
-- hash -r
-- conda config --set always_yes yes --set changeps1 no
-- conda create -n _testing python=$PYTHON
-- source activate _testing
-- conda info -a && conda list
+- micromamba activate
+- micromamba install python=$PYTHON pip mamba --yes -c conda-forge
+- mamba info -a && mamba list
 install:
-- pip install --pre -e .
+- pip install -e .
 script:
 - pip install -r requirements-testing.txt
 - pip install pytest pytest-cov pytest-datadir pytest-benchmark coveralls
