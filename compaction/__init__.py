@@ -1,8 +1,6 @@
-from ._version import get_versions
+import pkg_resources
+
 from .compaction import compact
 
+__version__ = pkg_resources.get_distribution("compaction").version
 __all__ = ["compact"]
-
-
-__version__ = get_versions()["version"]
-del get_versions

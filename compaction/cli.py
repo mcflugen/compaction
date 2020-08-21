@@ -9,11 +9,8 @@ import numpy as np  # type: ignore
 import pandas  # type: ignore
 import yaml
 
-from ._version import get_versions
 from .compaction import compact as _compact
 
-__version__ = get_versions()["version"]
-del get_versions
 
 out = partial(click.secho, bold=True, err=True)
 err = partial(click.secho, fg="red", err=True)
@@ -103,7 +100,7 @@ def compact() -> None:
 
 
 @compact.command()
-@click.version_option(version=__version__)
+@click.version_option()
 @click.option("-v", "--verbose", is_flag=True, help="Emit status messages to stderr.")
 @click.option("--dry-run", is_flag=True, help="Do not actually run the model")
 @click.option(
