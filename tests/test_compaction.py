@@ -1,9 +1,9 @@
 """Unit tests for compaction."""
+from io import StringIO
+
 import numpy as np  # type: ignore
 import pandas  # type: ignore
-import yaml
 from pytest import approx, mark, raises  # type: ignore
-from six import StringIO
 
 from compaction import compact
 from compaction.cli import load_config, run_compaction
@@ -191,48 +191,61 @@ def test_load_config_defaults() -> None:
     """Test load_config without file name."""
     config = load_config()
     defaults = {
-        "c": 5e-8,
-        "porosity_min": 0.0,
-        "porosity_max": 0.5,
-        "rho_grain": 2650.0,
-        "rho_void": 1000.0,
+        "constants": {
+            "c": 5e-8,
+            "porosity_min": 0.0,
+            "porosity_max": 0.5,
+            "rho_grain": 2650.0,
+            "rho_void": 1000.0,
+        }
     }
+    assert config == defaults
+
+    config = load_config(StringIO(""))
+    assert config == defaults
+
+    config = load_config(StringIO("[another_group]"))
+    assert config == defaults
+
+    config = load_config(StringIO("[compact]"))
+    assert config == defaults
+
+    config = load_config(StringIO("[compact]"))
     assert config == defaults
 
 
 def test_load_config_from_file() -> None:
     """Test config vars from a file."""
-    file_like = StringIO()
-    yaml.dump(dict(c=3.14), file_like)
-    file_like.seek(0)
+    file_like = StringIO(
+        """[compact.constants]
+        c = 3.14
+        """
+    )
     config = load_config(file_like)
 
     expected = {
-        "c": 3.14,
-        "porosity_min": 0.0,
-        "porosity_max": 0.5,
-        "rho_grain": 2650.0,
-        "rho_void": 1000.0,
+        "constants": {
+            "c": 3.14,
+            "porosity_min": 0.0,
+            "porosity_max": 0.5,
+            "rho_grain": 2650.0,
+            "rho_void": 1000.0,
+        }
     }
     assert config == expected
 
 
-def test_run() -> None:
-    """Test running compaction with file-like objects."""
+def test_run(tmpdir) -> None:
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
     phi_1 = compact(dz_0, phi_0, porosity_max=0.5)
 
-    src = StringIO()
-    dest = StringIO()
+    with tmpdir.as_cwd():
+        df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
+        df.to_csv("porosity.csv", index=False, header=False)
 
-    df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
-    df.to_csv(src, index=False, header=False)
+        run_compaction("porosity.csv", "porosity-out.csv", porosity_max=0.5)
 
-    src.seek(0)
-    run_compaction(src=src, dest=dest, porosity_max=0.5)
-    dest.seek(0)
+        data = pandas.read_csv("porosity-out.csv", names=("dz", "porosity"), dtype=float, comment="#")
 
-    data = pandas.read_csv(dest, names=("dz", "porosity"), dtype=float, comment="#")
-
-    assert np.all(data.porosity.values == approx(phi_1))
+        assert np.all(data.porosity.values == approx(phi_1))
