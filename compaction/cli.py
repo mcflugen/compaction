@@ -19,6 +19,45 @@ err = partial(click.secho, fg="red", err=True)
 
 
 def _tomlkit_to_popo(d):
+    """Convert a tomlkit doc to plain-old-python objects.
+
+    Examples
+    --------
+    >>> import tomlkit
+    >>> from compaction.cli import _tomlkit_to_popo
+
+    >>> contents = \"\"\"
+    ... [[test]]
+    ... int_value = 3
+    ... float_value = 3.14
+    ... str_value = "pi"
+    ... bool_value = true
+    ... \"\"\"
+
+    >>> doc = tomlkit.parse(contents)
+    >>> doc
+    {'test': [{'int_value': 3, 'float_value': 3.14, 'str_value': 'pi', 'bool_value': True}]}
+
+    >>> isinstance(doc["test"][0]["int_value"], tomlkit.items.Item)
+    True
+    >>> isinstance(doc["test"][0]["float_value"], tomlkit.items.Item)
+    True
+    >>> isinstance(doc["test"][0]["str_value"], tomlkit.items.Item)
+    True
+
+    >>> popo = _tomlkit_to_popo(doc)
+    >>> popo
+    {'test': [{'int_value': 3, 'float_value': 3.14, 'str_value': 'pi', 'bool_value': True}]}
+
+    >>> isinstance(popo["test"][0]["int_value"], tomlkit.items.Item)
+    False
+    >>> isinstance(popo["test"][0]["float_value"], tomlkit.items.Item)
+    False
+    >>> isinstance(popo["test"][0]["str_value"], tomlkit.items.Item)
+    False
+    >>> isinstance(popo["test"][0]["bool_value"], tomlkit.items.Item)
+    False
+    """
     try:
         result = getattr(d, "value")
     except AttributeError:
@@ -40,7 +79,7 @@ def _tomlkit_to_popo(d):
         result = bool(result)
     else:
         if not isinstance(result, (int, float, str, bool)):
-            warnings.warn(
+            warnings.warn(  # pragma: no cover
                 "unexpected type ({0!r}) encountered when converting toml to a dict".format(
                     result.__class__.__name__
                 )
@@ -148,7 +187,7 @@ def compact(cd) -> None:
 
         $ compact run
     """
-    os.chdir(cd)
+    os.chdir(cd)  # pragma: no cover
 
 
 @compact.command()
