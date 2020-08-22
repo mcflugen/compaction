@@ -9,7 +9,7 @@ from typing import Optional, TextIO
 import click
 import numpy as np  # type: ignore
 import pandas  # type: ignore
-import tomlkit as toml
+import tomlkit as toml  # type: ignore
 
 from .compaction import compact as _compact
 
@@ -110,12 +110,7 @@ def _contents_of_input_file(infile: str) -> str:
     return contents[infile]
 
 
-def run_compaction(
-    src: Optional[TextIO] = None, dest: Optional[TextIO] = None, **kwds
-) -> None:
-    src = src or sys.stdin
-    dest = dest or sys.stdout
-
+def run_compaction(src: str, dest: str, **kwds) -> None:
     init = pandas.read_csv(src, names=("dz", "porosity"), dtype=float, comment="#")
 
     dz_new = np.empty_like(init.dz)
@@ -124,8 +119,10 @@ def run_compaction(
     )
 
     result = pandas.DataFrame.from_dict({"dz": dz_new, "porosity": porosity_new})
-    print("# Layer Thickness [m], Porosity [-]", file=dest)
-    result.to_csv(dest, index=False, header=False)
+
+    with open(dest, "w") as fp:
+        print("# Layer Thickness [m], Porosity [-]", file=fp)
+        result.to_csv(fp, index=False, header=False)
 
 
 @click.group(chain=True)
@@ -169,8 +166,7 @@ def run(dry_run: bool, verbose: bool) -> None:
     if dry_run:
         out("Nothing to do. 😴")
     else:
-        with open("porosity-out.csv", "w") as dest:
-            run_compaction("porosity.csv", dest, **params["constants"])
+        run_compaction("porosity.csv", "porosity-out.csv", **params["constants"])
 
         out("💥 Finished! 💥")
         out("Output written to {0}".format("porosity-out.csv"))

@@ -6,8 +6,7 @@ import shutil
 import numpy as np  # type: ignore
 import pandas  # type: ignore
 import pytest  # type: ignore
-import tomlkit
-import yaml
+import tomlkit  # type: ignore
 from click.testing import CliRunner
 from numpy.testing import assert_array_almost_equal  # type: ignore
 

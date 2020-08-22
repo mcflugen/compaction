@@ -235,22 +235,18 @@ def test_load_config_from_file() -> None:
     assert config == expected
 
 
-def test_run() -> None:
-    """Test running compaction with file-like objects."""
+def test_run(tmpdir) -> None:
     dz_0 = np.full(100, 1.0)
     phi_0 = np.full(100, 0.5)
     phi_1 = compact(dz_0, phi_0, porosity_max=0.5)
 
-    src = StringIO()
-    dest = StringIO()
 
-    df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
-    df.to_csv(src, index=False, header=False)
+    with tmpdir.as_cwd():
+        df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
+        df.to_csv("porosity.csv", index=False, header=False)
 
-    src.seek(0)
-    run_compaction(src=src, dest=dest, porosity_max=0.5)
-    dest.seek(0)
+        run_compaction("porosity.csv", "porosity-out.csv", porosity_max=0.5)
 
-    data = pandas.read_csv(dest, names=("dz", "porosity"), dtype=float, comment="#")
+        data = pandas.read_csv("porosity-out.csv", names=("dz", "porosity"), dtype=float, comment="#")
 
-    assert np.all(data.porosity.values == approx(phi_1))
+        assert np.all(data.porosity.values == approx(phi_1))
