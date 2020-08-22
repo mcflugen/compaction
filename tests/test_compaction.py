@@ -240,7 +240,6 @@ def test_run(tmpdir) -> None:
     phi_0 = np.full(100, 0.5)
     phi_1 = compact(dz_0, phi_0, porosity_max=0.5)
 
-
     with tmpdir.as_cwd():
         df = pandas.DataFrame.from_dict({"dz": dz_0, "porosity": phi_0})
         df.to_csv("porosity.csv", index=False, header=False)

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import filecmp
-import os
 import shutil
 
 import numpy as np  # type: ignore
