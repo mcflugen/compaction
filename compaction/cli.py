@@ -75,7 +75,17 @@ def load_config(stream: Optional[TextIO] = None):
         }
     }
     if stream is not None:
-        conf.update(toml.parse(stream.read()))
+        try:
+            local_params = toml.parse(stream.read())["compact"]
+        except KeyError:
+            local_params = {"constants": {}}
+
+        try:
+            local_constants = local_params["constants"]
+        except KeyError:
+            local_constants = {}
+
+        conf["compact"]["constants"].update(local_constants)
 
     return _tomlkit_to_popo(conf).pop("compact")
 
