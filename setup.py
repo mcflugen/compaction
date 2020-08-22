@@ -23,7 +23,7 @@ setup(
     setup_requires=[],
     packages=find_packages(),
     entry_points={
-        "console_scripts": ["compact=compaction.cli:compact"],
+        "console_scripts": ["compaction=compaction.cli:compaction"],
         "landlab.components": ["Compact=compaction.landlab:Compact"],
     },
     version="v0.3.0.dev0",

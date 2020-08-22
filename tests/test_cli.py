@@ -14,27 +14,25 @@ from compaction import cli, compact
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner(mix_stderr=False)
-    result = runner.invoke(cli.compact, ["--help"])
+    result = runner.invoke(cli.compaction, ["--help"])
     assert result.exit_code == 0
 
-    result = runner.invoke(cli.compact, ["--version"])
+    result = runner.invoke(cli.compaction, ["--version"])
     assert result.exit_code == 0
     assert "version" in result.stdout
 
-    result = runner.invoke(cli.compact)
+    result = runner.invoke(cli.compaction)
     assert result.exit_code == 0
     assert "Compact layers of sediment" in result.stdout
 
 
 def test_dry_run(tmpdir, datadir):
     with tmpdir.as_cwd():
-        shutil.copy(datadir / "compact.toml", ".")
+        shutil.copy(datadir / "compaction.toml", ".")
         shutil.copy(datadir / "porosity.csv", ".")
 
         runner = CliRunner()
-        result = runner.invoke(
-            cli.run, ["--dry-run"],
-        )
+        result = runner.invoke(cli.run, ["--dry-run"],)
         assert result.exit_code == 0
         assert "Nothing to do" in result.output
         assert not (tmpdir / "porosity-out.csv").exists()
@@ -42,13 +40,11 @@ def test_dry_run(tmpdir, datadir):
 
 def test_verbose(tmpdir, datadir):
     with tmpdir.as_cwd():
-        shutil.copy(datadir / "compact.toml", ".")
+        shutil.copy(datadir / "compaction.toml", ".")
         shutil.copy(datadir / "porosity.csv", ".")
 
         runner = CliRunner()
-        result = runner.invoke(
-            cli.run, ["--verbose"],
-        )
+        result = runner.invoke(cli.run, ["--verbose"],)
         assert result.exit_code == 0
         assert (tmpdir / "porosity-out.csv").exists()
 
@@ -59,7 +55,7 @@ def test_constant_porosity(tmpdir, datadir):
     )
     phi_expected = compact(data["dz"], data["porosity"], porosity_max=0.6)
     with tmpdir.as_cwd():
-        shutil.copy(datadir / "compact.toml", ".")
+        shutil.copy(datadir / "compaction.toml", ".")
         shutil.copy(datadir / "porosity.csv", ".")
 
         runner = CliRunner(mix_stderr=False)
@@ -80,12 +76,13 @@ def test_setup(tmpdir):
         result = runner.invoke(cli.setup)
 
         assert result.exit_code == 0
-        assert (tmpdir / "compact.toml").exists()
+        assert (tmpdir / "compaction.toml").exists()
         assert (tmpdir / "porosity.csv").exists()
 
 
 @pytest.mark.parametrize(
-    "files", (("compact.toml",), ("porosity.csv",), ("compact.toml", "porosity.csv"))
+    "files",
+    (("compaction.toml",), ("porosity.csv",), ("compaction.toml", "porosity.csv")),
 )
 def test_setup_with_existing_files(tmpdir, files):
     runner = CliRunner(mix_stderr=False)
@@ -104,9 +101,9 @@ def test_setup_with_existing_files(tmpdir, files):
 
 def test_generate(tmpdir):
     with tmpdir.as_cwd():
-        result = CliRunner(mix_stderr=False).invoke(cli.generate, ["compact.toml"])
+        result = CliRunner(mix_stderr=False).invoke(cli.generate, ["compaction.toml"])
         assert result.exit_code == 0
-        with open("compact.toml", "w") as fp:
+        with open("compaction.toml", "w") as fp:
             fp.write(result.stdout)
 
         result = CliRunner(mix_stderr=False).invoke(cli.generate, ["porosity.csv"])
@@ -122,7 +119,7 @@ def test_generate(tmpdir):
 
 def test_generate_toml(tmpdir):
     runner = CliRunner(mix_stderr=False)
-    result = runner.invoke(cli.generate, ["compact.toml"])
+    result = runner.invoke(cli.generate, ["compaction.toml"])
 
     assert result.exit_code == 0
 
