@@ -13,7 +13,6 @@ import tomlkit as toml  # type: ignore
 
 from .compaction import compact as _compact
 
-
 out = partial(click.secho, bold=True, err=True)
 err = partial(click.secho, fg="red", err=True)
 
@@ -103,7 +102,7 @@ def load_config(stream: Optional[TextIO] = None):
         Config parameters.
     """
     conf = {
-        "compact" : {
+        "compaction": {
             "constants": {
                 "c": 5e-8,
                 "porosity_min": 0.0,
@@ -115,7 +114,7 @@ def load_config(stream: Optional[TextIO] = None):
     }
     if stream is not None:
         try:
-            local_params = toml.parse(stream.read())["compact"]
+            local_params = toml.parse(stream.read())["compaction"]
         except KeyError:
             local_params = {"constants": {}}
 
@@ -124,9 +123,9 @@ def load_config(stream: Optional[TextIO] = None):
         except KeyError:
             local_constants = {}
 
-        conf["compact"]["constants"].update(local_constants)
+        conf["compaction"]["constants"].update(local_constants)
 
-    return _tomlkit_to_popo(conf).pop("compact")
+    return _tomlkit_to_popo(conf).pop("compaction")
 
 
 def _contents_of_input_file(infile: str) -> str:
@@ -139,7 +138,7 @@ def _contents_of_input_file(infile: str) -> str:
         return contents
 
     contents = {
-        "compact.toml": toml.dumps(dict(compact=params)),
+        "compaction.toml": toml.dumps(dict(compacton=params)),
         "porosity.csv": as_csv(
             [[100.0, 0.5], [100.0, 0.5], [100.0, 0.5]],
             header="Layer Thickness [m], Porosity [-]",
@@ -172,7 +171,7 @@ def run_compaction(src: str, dest: str, **kwds) -> None:
     type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
     help="chage to directory, then execute",
 )
-def compact(cd) -> None:
+def compaction(cd) -> None:
     """Compact layers of sediment.
 
     \b
@@ -181,22 +180,22 @@ def compact(cd) -> None:
       Create a folder with example input files,
 
         $ mkdir compaction-example && cd compaction-example
-        $ compact setup
+        $ compaction setup
 
       Run a simulation using the examples input files,
 
-        $ compact run
+        $ compaction run
     """
     os.chdir(cd)  # pragma: no cover
 
 
-@compact.command()
+@compaction.command()
 @click.version_option()
 @click.option("-v", "--verbose", is_flag=True, help="Emit status messages to stderr.")
 @click.option("--dry-run", is_flag=True, help="Do not actually run the model")
 def run(dry_run: bool, verbose: bool) -> None:
     """Run a simulation."""
-    with open("compact.toml", "r") as fp:
+    with open("compaction.toml", "r") as fp:
         params = load_config(fp)
 
     if verbose:
@@ -211,19 +210,19 @@ def run(dry_run: bool, verbose: bool) -> None:
         out("Output written to {0}".format("porosity-out.csv"))
 
 
-@compact.command()
+@compaction.command()
 @click.argument(
-    "infile", type=click.Choice(["compact.toml", "porosity.csv"]),
+    "infile", type=click.Choice(["compaction.toml", "porosity.csv"]),
 )
 def generate(infile: str) -> None:
     """Show example input files."""
     print(_contents_of_input_file(infile))
 
 
-@compact.command()
+@compaction.command()
 def setup() -> None:
     """Setup a folder of input files for a simulation."""
-    files = [pathlib.Path(fname) for fname in ["porosity.csv", "compact.toml"]]
+    files = [pathlib.Path(fname) for fname in ["porosity.csv", "compaction.toml"]]
 
     existing_files = [str(file_) for file_ in files if file_.exists()]
     if existing_files:

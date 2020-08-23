@@ -53,10 +53,10 @@ script:
 - pip install -r requirements-testing.txt
 - pip install pytest pytest-cov pytest-datadir pytest-benchmark coveralls
 - pytest -vvv --cov=compaction --cov-report=xml:$(pwd)/coverage.xml --mypy
-- compact --help
-- compact --version
-- compact generate compact.toml
-- compact generate porosity.csv
+- compaction --help
+- compaction --version
+- compaction generate compaction.toml
+- compaction generate porosity.csv
 - mkdir example
-- compact --cd=example setup run
+- compaction --cd=example setup run
 after_success: coveralls

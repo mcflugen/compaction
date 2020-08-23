@@ -207,17 +207,17 @@ def test_load_config_defaults() -> None:
     config = load_config(StringIO("[another_group]"))
     assert config == defaults
 
-    config = load_config(StringIO("[compact]"))
+    config = load_config(StringIO("[compaction]"))
     assert config == defaults
 
-    config = load_config(StringIO("[compact]"))
+    config = load_config(StringIO("[compaction]"))
     assert config == defaults
 
 
 def test_load_config_from_file() -> None:
     """Test config vars from a file."""
     file_like = StringIO(
-        """[compact.constants]
+        """[compaction.constants]
         c = 3.14
         """
     )
@@ -246,6 +246,8 @@ def test_run(tmpdir) -> None:
 
         run_compaction("porosity.csv", "porosity-out.csv", porosity_max=0.5)
 
-        data = pandas.read_csv("porosity-out.csv", names=("dz", "porosity"), dtype=float, comment="#")
+        data = pandas.read_csv(
+            "porosity-out.csv", names=("dz", "porosity"), dtype=float, comment="#"
+        )
 
         assert np.all(data.porosity.values == approx(phi_1))
