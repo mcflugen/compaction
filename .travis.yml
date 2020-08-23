@@ -55,7 +55,7 @@ script:
 - pytest -vvv --cov=compaction --cov-report=xml:$(pwd)/coverage.xml --mypy
 - compaction --help
 - compaction --version
-- compaction generate compact.toml
+- compaction generate compaction.toml
 - compaction generate porosity.csv
 - mkdir example
 - compaction --cd=example setup run
