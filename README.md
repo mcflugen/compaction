@@ -1,3 +1,8 @@
+[![Test][test_badge]][test_workflow]
+[test_badge]: https://github.com/mcflugen/compaction/actions/workflows/test.yml/badge.svg
+[test_workflow]: https://github.com/mcflugen/compaction/actions/workflows/test.yml
+
+
 # compaction: Compact layers of sediment
 
 Compact a column of sediment following Bahr et al., 2001.
