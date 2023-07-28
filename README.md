@@ -1,11 +1,3 @@
-[![Build
-Status](https://travis-ci.org/mcflugen/compaction.svg?branch=master)](https://travis-ci.org/mcflugen/compaction)
-
-[![Build status](https://ci.appveyor.com/api/projects/status/yle29j1hl6a8yu8p?svg=true)](https://ci.appveyor.com/project/mcflugen/compaction)
-
-[![Coverage
-Status](https://coveralls.io/repos/github/mcflugen/compaction/badge.svg?branch=mcflugen%2Fadd-unit-tests)](https://coveralls.io/github/mcflugen/compaction?branch=master)
-
 # compaction: Compact layers of sediment
 
 Compact a column of sediment following Bahr et al., 2001.
