@@ -123,11 +123,13 @@ platforms = ["osx-arm64", "linux-64", "osx-64", "win-64"]
 [tool.towncrier]
 directory = "news"
 package = "compaction"
-filename = "CHANGES.rst"
+filename = "NEWS.md"
+underlines = ["", "", ""]
+start_string = "<!-- towncrier release notes start -->\n"
+template = "news/changelog_template.jinja"
 single_file = true
-underlines = "-`^"
-issue_format = "`#{issue} <https://github.com/mcflugen/compaction/issues/{issue}>`_"
-title_format = "{version} ({project_date})"
+issue_format = "[#{issue}](https://github.com/mcflugen/compaction/issues/{issue})"
+title_format = "## [{version}](https://github.com/mcflugen/compaction/tree/{version}) - {project_date}"
 
 type = [
   {name="New Tutorial Notebooks", directory="notebook", showcontent=true},
