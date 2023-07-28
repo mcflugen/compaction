@@ -1,6 +1,4 @@
 """Compact layers of sediment due to overlying load."""
-from typing import Dict
-
 from landlab import Component  # type: ignore
 from scipy.constants import g  # type: ignore
 
@@ -8,7 +6,6 @@ from .compaction import compact
 
 
 class Compact(Component):
-
     _name = "Compaction"
     _time_units = ""
     _input_var_names = ("sediment_layer_thickness", "sediment_layer_porority")
@@ -84,9 +81,9 @@ class Compact(Component):
                [ True,  True,  True],
                [False, False, False]], dtype=bool)
         """
-        self._compaction_params: Dict[str, float] = {}
+        self._compaction_params: dict[str, float] = {}
 
-        super(Compact, self).__init__(grid)
+        super().__init__(grid)
 
         self.c = c
         self.rho_grain = rho_grain

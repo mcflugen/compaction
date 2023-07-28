@@ -32,7 +32,10 @@ def test_dry_run(tmpdir, datadir):
         shutil.copy(datadir / "porosity.csv", ".")
 
         runner = CliRunner()
-        result = runner.invoke(cli.run, ["--dry-run"],)
+        result = runner.invoke(
+            cli.run,
+            ["--dry-run"],
+        )
         assert result.exit_code == 0
         assert "Nothing to do" in result.output
         assert not (tmpdir / "porosity-out.csv").exists()
@@ -44,7 +47,10 @@ def test_verbose(tmpdir, datadir):
         shutil.copy(datadir / "porosity.csv", ".")
 
         runner = CliRunner()
-        result = runner.invoke(cli.run, ["--verbose"],)
+        result = runner.invoke(
+            cli.run,
+            ["--verbose"],
+        )
         assert result.exit_code == 0
         assert (tmpdir / "porosity-out.csv").exists()
 

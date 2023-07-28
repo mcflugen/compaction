@@ -18,7 +18,7 @@ def test_matches_module(grid):
     phi = np.full((100, 3), 0.5)
     phi_expected = compaction.compact(dz, phi, porosity_max=0.5)
 
-    for layer in range(100):
+    for _ in range(100):
         grid.event_layers.add(1.0, porosity=0.5)
     compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
     compact.calculate()
@@ -37,7 +37,7 @@ def test_init_without_layers_added(grid):
 @mark.benchmark(group="landlab")
 def test_grid_size(benchmark, size):
     grid = RasterModelGrid((3, 101))
-    for layer in range(size):
+    for _ in range(size):
         grid.event_layers.add(1.0, porosity=0.5)
 
     compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
@@ -51,7 +51,7 @@ def test_grid_size(benchmark, size):
 
 
 def test_init_with_layers_added(grid):
-    for layer in range(5):
+    for _ in range(5):
         grid.event_layers.add(100.0, porosity=0.7)
     compact = Compact(grid, porosity_min=0.1, porosity_max=0.7)
     compact.run_one_step()
@@ -64,7 +64,7 @@ def test_init_with_layers_added(grid):
 
 
 def test_layers_compact_evenly(grid):
-    for layer in range(1):
+    for _ in range(1):
         grid.event_layers.add(100.0, porosity=0.7)
     compact = Compact(grid, porosity_min=0.1, porosity_max=0.7)
     compact.run_one_step()
