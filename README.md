@@ -1,16 +1,13 @@
-[![Build
-Status](https://travis-ci.org/mcflugen/compaction.svg?branch=master)](https://travis-ci.org/mcflugen/compaction)
+[![Test][test_badge]][test_workflow]
+[test_badge]: https://github.com/mcflugen/compaction/actions/workflows/test.yml/badge.svg
+[test_workflow]: https://github.com/mcflugen/compaction/actions/workflows/test.yml
 
-[![Build status](https://ci.appveyor.com/api/projects/status/yle29j1hl6a8yu8p?svg=true)](https://ci.appveyor.com/project/mcflugen/compaction)
-
-[![Coverage
-Status](https://coveralls.io/repos/github/mcflugen/compaction/badge.svg?branch=mcflugen%2Fadd-unit-tests)](https://coveralls.io/github/mcflugen/compaction?branch=master)
 
 # compaction: Compact layers of sediment
 
 Compact a column of sediment following Bahr et al., 2001.
 
-Cite as:
+Cite as::
 
     @article{bahr2001exponential,
       title={Exponential approximations to compacted sediment porosity profiles},

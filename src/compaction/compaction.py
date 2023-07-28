@@ -75,7 +75,7 @@ def compact(
             return_dz[~contains_sediment] = 0.0
         else:
             raise TypeError(
-                "size and shape of return_dz ({0}, {1}) must be that of dz ({2}, {3})".format(
+                "size and shape of return_dz ({}, {}) must be that of dz ({}, {})".format(
                     return_dz.dtype, return_dz.shape, dz.dtype, dz.shape
                 )
             )

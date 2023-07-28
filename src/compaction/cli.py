@@ -58,7 +58,7 @@ def _tomlkit_to_popo(d):
     False
     """
     try:
-        result = getattr(d, "value")
+        result = d.value
     except AttributeError:
         result = d
 
@@ -79,9 +79,10 @@ def _tomlkit_to_popo(d):
     else:
         if not isinstance(result, (int, float, str, bool)):
             warnings.warn(  # pragma: no cover
-                "unexpected type ({0!r}) encountered when converting toml to a dict".format(
+                "unexpected type ({!r}) encountered when converting toml to a dict".format(
                     result.__class__.__name__
-                )
+                ),
+                stacklevel=2,
             )
 
     return result
@@ -138,7 +139,7 @@ def _contents_of_input_file(infile: str) -> str:
         return contents
 
     contents = {
-        "compaction.toml": toml.dumps(dict(compacton=params)),
+        "compaction.toml": toml.dumps({"compacton": params}),
         "porosity.csv": as_csv(
             [[100.0, 0.5], [100.0, 0.5], [100.0, 0.5]],
             header="Layer Thickness [m], Porosity [-]",
@@ -195,7 +196,7 @@ def compaction(cd) -> None:
 @click.option("--dry-run", is_flag=True, help="Do not actually run the model")
 def run(dry_run: bool, verbose: bool) -> None:
     """Run a simulation."""
-    with open("compaction.toml", "r") as fp:
+    with open("compaction.toml") as fp:
         params = load_config(fp)
 
     if verbose:
@@ -207,12 +208,13 @@ def run(dry_run: bool, verbose: bool) -> None:
         run_compaction("porosity.csv", "porosity-out.csv", **params["constants"])
 
         out("💥 Finished! 💥")
-        out("Output written to {0}".format("porosity-out.csv"))
+        out("Output written to {}".format("porosity-out.csv"))
 
 
 @compaction.command()
 @click.argument(
-    "infile", type=click.Choice(["compaction.toml", "porosity.csv"]),
+    "infile",
+    type=click.Choice(["compaction.toml", "porosity.csv"]),
 )
 def generate(infile: str) -> None:
     """Show example input files."""
@@ -228,7 +230,8 @@ def setup() -> None:
     if existing_files:
         for name in existing_files:
             err(
-                f"{name}: File exists. Either remove and then rerun or choose a different destination folder",
+                f"{name}: File exists."
+                " Either remove and then rerun or choose a different destination folder"
             )
     else:
         for file_ in files:

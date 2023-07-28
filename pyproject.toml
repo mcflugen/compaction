@@ -1,0 +1,136 @@
+[build-system]
+requires = ["cython~=3.0.0b3", "numpy", "setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compaction"
+description = "Compact a column of sediment following Bahr et al., 2001."
+authors = [
+  {email = "mcflugen@gmail.com"},
+  {name = "Eric Hutton"}
+]
+maintainers = [
+  {email = "mcflugen@gmail.com"},
+  {name = "Eric Hutton"}
+]
+keywords = [
+  "earth science",
+  "landlab",
+  "numerical modeling",
+  "sediment compaction",
+]
+license = {file = "LICENSE.md"}
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Cython",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+requires-python = ">=3.9"
+dependencies = [
+	"click",
+	"landlab",
+	"numpy",
+	"pandas",
+	"pyyaml",
+	"tomlkit",
+	"scipy",
+]
+dynamic = ["readme", "version"]
+
+[project.urls]
+homepage = "https://github.com/mcflugen/compaction"
+documentation = "https://compaction.readthedocs.io"
+repository = "https://github.com/mcflugen/compaction"
+changelog = "https://github.com/mcflugen/compaction/blob/develop/CHANGES.rst"
+
+[project.optional-dependencies]
+dev = ["nox"]
+testing = [
+  "coveralls",
+  "hypothesis",
+  "pytest",
+  "pytest-cov",
+  "pytest-datadir",
+  "pytest-xdist",
+]
+
+[project.entry-points."landlab.components"]
+Compact = "compaction.landlab:Compact"
+
+[project.scripts]
+compaction = "compaction.cli:compaction"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md", "AUTHORS.md"]}
+version = {attr = "compaction._version.__version__"}
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["src/compaction", "tests"]
+norecursedirs = [".*", "*.egg*", "build", "dist"]
+addopts = """
+  --ignore setup.py
+  --tb native
+  --durations 16
+  --strict-markers
+  --doctest-modules
+  -vvv
+"""
+doctest_optionflags = [
+  "NORMALIZE_WHITESPACE",
+  "IGNORE_EXCEPTION_DETAIL",
+  "ALLOW_UNICODE"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "notebook: marks tests as notebook (deselect with '-m \"not notebook\"')"
+]
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+combine_as_imports = true
+line_length = 88
+
+[tool.check-manifest]
+ignore = [".nox", "build"]
+
+[tool.cibuildwheel]
+build = "cp39-* cp310-* cp311-*"
+skip = "*-musllinux_*"
+archs = "x86_64,i686,aarch64,arm64,AMD64,x86"
+
+[tool.conda-lock]
+channels = ["conda-forge", "defaults"]
+platforms = ["osx-arm64", "linux-64", "osx-64", "win-64"]
+
+[tool.towncrier]
+directory = "news"
+package = "compaction"
+filename = "NEWS.md"
+underlines = ["", "", ""]
+start_string = "<!-- towncrier release notes start -->\n"
+template = "news/changelog_template.jinja"
+single_file = true
+issue_format = "[#{issue}](https://github.com/mcflugen/compaction/issues/{issue})"
+title_format = "## [{version}](https://github.com/mcflugen/compaction/tree/{version}) - {project_date}"
+
+type = [
+  {name="New Tutorial Notebooks", directory="notebook", showcontent=true},
+  {name="New Features", directory="feature", showcontent=true},
+  {name="Bug Fixes", directory="bugfix", showcontent=true},
+  {name="Documentation Enhancements", directory="docs", showcontent=true},
+  {name="Other Changes and Additions", directory="misc", showcontent=true},
+]
