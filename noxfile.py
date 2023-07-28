@@ -9,15 +9,15 @@ PROJECT = "compaction"
 ROOT = pathlib.Path(__file__).parent
 
 
-@nox.session(venv_backend="mamba")
+@nox.session()
 def test(session: nox.Session) -> None:
     """Run the tests."""
     os.environ["WITH_OPENMP"] = "1"
 
     # session.conda_install("c-compiler", "cxx-compiler")
     session.log(f"CC = {os.environ.get('CC', 'NOT FOUND')}")
-    session.conda_install("--file", "requirements.in")
-    session.conda_install("--file", "requirements-testing.in")
+    session.install("-r", "requirements.in")
+    session.install("-r", "requirements-testing.in")
     session.install("-e", ".", "--no-deps")
 
     args = [
