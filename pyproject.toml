@@ -71,17 +71,13 @@ compaction = "compaction.cli:compaction"
 [tool.setuptools]
 include-package-data = true
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["compaction*"]
-
 [tool.setuptools.dynamic]
 readme = {file = ["README.md", "AUTHORS.md"]}
 version = {attr = "compaction._version.__version__"}
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-testpaths = ["compaction", "tests"]
+testpaths = ["src/compaction", "tests"]
 norecursedirs = [".*", "*.egg*", "build", "dist"]
 addopts = """
   --ignore setup.py
