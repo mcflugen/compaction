@@ -2,7 +2,7 @@
 
 Compact a column of sediment following Bahr et al., 2001.
 
-Cite as:
+Cite as::
 
     @article{bahr2001exponential,
       title={Exponential approximations to compacted sediment porosity profiles},

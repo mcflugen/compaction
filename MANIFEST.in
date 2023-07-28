@@ -1,2 +1,9 @@
-include LICENSE
-include requirements.txt
+include .coveragerc
+include .pre-commit-config.yaml
+include LICENSE.md
+include NEWS.md
+include noxfile.py
+include requirements*.in
+
+recursive-exclude news *
+recursive-exclude tests *
