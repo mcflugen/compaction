@@ -22,7 +22,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11"]
-        pytest-marker: ["slow", "not slow"]
 
     steps:
       - uses: actions/checkout@v3
@@ -45,7 +44,7 @@ jobs:
         env:
           HYPOTHESIS_PROFILE: "ci"
         run: |
-          nox -s test -- -m "${{ matrix.pytest-marker }}"
+          nox -s test
 
       - name: Coveralls
         if: matrix.os == 'ubuntu-latest'
