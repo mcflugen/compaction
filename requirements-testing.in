@@ -3,4 +3,3 @@ pytest-benchmark
 pytest-cov
 pytest-datadir
 pytest-mypy
-pytest-xdist

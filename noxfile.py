@@ -21,8 +21,6 @@ def test(session: nox.Session) -> None:
     session.install("-e", ".", "--no-deps")
 
     args = [
-        "-n",
-        "auto",
         "--cov",
         PROJECT,
         "-vvv",
