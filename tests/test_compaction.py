@@ -3,10 +3,51 @@ from io import StringIO
 
 import numpy as np  # type: ignore
 import pandas  # type: ignore
+from numpy.testing import assert_array_almost_equal
 from pytest import approx, mark, raises  # type: ignore
 
 from compaction import compact
+from compaction._compaction import cumsum_rows, cumsum_rows_par
 from compaction.cli import load_config, run_compaction
+
+
+def test_cumsum_rows() -> None:
+    values = np.ones((5, 3), dtype=float)
+    out = np.empty_like(values)
+
+    cumsum_rows(values, out)
+
+    assert_array_almost_equal(
+        out,
+        [[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4], [5, 5, 5]],
+    )
+
+
+def test_cumsum_rows_np_benchmark(benchmark) -> None:
+    values = np.ones((1000, 4000), dtype=float)
+    out = np.empty_like(values)
+
+    out = benchmark(np.cumsum, values, axis=0)
+
+    assert_array_almost_equal(out, np.cumsum(values, axis=0))
+
+
+def test_cumsum_rows_par_benchmark(benchmark) -> None:
+    values = np.ones((1000, 4000), dtype=float)
+    out = np.empty_like(values)
+
+    benchmark(cumsum_rows_par, values, out)
+
+    assert_array_almost_equal(out, np.cumsum(values, axis=0))
+
+
+def test_cumsum_rows_par() -> None:
+    values = np.ones((50, 3), dtype=float)
+    out = np.empty_like(values)
+
+    cumsum_rows_par(values, out)
+
+    assert_array_almost_equal(out, np.cumsum(values, axis=0))
 
 
 def test_to_analytical() -> None:
