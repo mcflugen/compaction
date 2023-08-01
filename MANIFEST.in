@@ -6,4 +6,7 @@ include noxfile.py
 include requirements*.in
 
 recursive-exclude news *
+recursive-exclude src *.c
 recursive-exclude tests *
+
+recursive-include src *.pyx
