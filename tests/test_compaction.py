@@ -7,45 +7,34 @@ from numpy.testing import assert_array_almost_equal
 from pytest import approx, mark, raises  # type: ignore
 
 from compaction import compact
-from compaction._compaction import cumsum_rows, cumsum_rows_par
+from compaction._compaction import cumsum_rows_par, cumsum_rows_serial
 from compaction.cli import load_config, run_compaction
 
 
-def test_cumsum_rows() -> None:
-    values = np.ones((5, 3), dtype=float)
+@mark.parametrize("size", (10, 100, 1000, 10000))
+@mark.parametrize("method", ("numpy", "openmp", "serial"))
+def test_cumsum_rows_benchmark(benchmark, size, method) -> None:
+    values = np.ones((size, 4000), dtype=float)
     out = np.empty_like(values)
 
-    cumsum_rows(values, out)
-
-    assert_array_almost_equal(
-        out,
-        [[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4], [5, 5, 5]],
-    )
-
-
-def test_cumsum_rows_np_benchmark(benchmark) -> None:
-    values = np.ones((1000, 4000), dtype=float)
-    out = np.empty_like(values)
-
-    out = benchmark(np.cumsum, values, axis=0)
+    if method == "numpy":
+        benchmark(np.cumsum, values, axis=0, out=out)
+    elif method == "serial":
+        benchmark(cumsum_rows_serial, values, out)
+    else:
+        benchmark(cumsum_rows_par, values, out)
 
     assert_array_almost_equal(out, np.cumsum(values, axis=0))
 
 
-def test_cumsum_rows_par_benchmark(benchmark) -> None:
-    values = np.ones((1000, 4000), dtype=float)
+@mark.parametrize("n_rows", (10, 100, 1000, 10000))
+@mark.parametrize("n_cols", (10, 100, 1000, 10000))
+@mark.benchmark(group="number-of-rows-cols")
+def test_cumsum_rows_par_benchmark(benchmark, n_rows, n_cols) -> None:
+    values = np.ones((n_rows, n_cols), dtype=float)
     out = np.empty_like(values)
 
     benchmark(cumsum_rows_par, values, out)
-
-    assert_array_almost_equal(out, np.cumsum(values, axis=0))
-
-
-def test_cumsum_rows_par() -> None:
-    values = np.ones((50, 3), dtype=float)
-    out = np.empty_like(values)
-
-    cumsum_rows_par(values, out)
 
     assert_array_almost_equal(out, np.cumsum(values, axis=0))
 
