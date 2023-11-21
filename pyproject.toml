@@ -43,7 +43,7 @@ dependencies = [
 	"tomlkit",
 	"scipy",
 ]
-dynamic = ["readme", "version"]
+dynamic = ["readme" , "version"]
 
 [project.urls]
 homepage = "https://github.com/mcflugen/compaction"
@@ -69,8 +69,11 @@ Compact = "compaction.landlab:Compact"
 compaction = "compaction.cli:compaction"
 
 [tool.setuptools]
-py-modules = []
 include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["compaction*"]
 
 [tool.setuptools.dynamic]
 readme = {file = ["README.md", "AUTHORS.md"], content_type="text/markdown"}
