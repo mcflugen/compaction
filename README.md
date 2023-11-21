@@ -1,4 +1,5 @@
 [![Test][test_badge]][test_workflow]
+
 [test_badge]: https://github.com/mcflugen/compaction/actions/workflows/test.yml/badge.svg
 [test_workflow]: https://github.com/mcflugen/compaction/actions/workflows/test.yml
 
