@@ -1,5 +1,5 @@
 [build-system]
-requires = ["cython~=3.0.0b3", "numpy", "setuptools", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -69,10 +69,11 @@ Compact = "compaction.landlab:Compact"
 compaction = "compaction.cli:compaction"
 
 [tool.setuptools]
+py-modules = []
 include-package-data = true
 
 [tool.setuptools.dynamic]
-readme = {file = ["README.md", "AUTHORS.md"]}
+readme = {file = ["README.md", "AUTHORS.md"], content_type="text/markdown"}
 version = {attr = "compaction._version.__version__"}
 
 [tool.pytest.ini_options]
