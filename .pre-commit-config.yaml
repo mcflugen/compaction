@@ -94,6 +94,7 @@ repos:
     additional_dependencies:
     - numpy
     - cython~=3.0.0b3
+    - wheel
 
 - repo: https://github.com/PyCQA/pydocstyle
   rev: 6.3.0
