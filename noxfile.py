@@ -5,11 +5,12 @@ import tempfile
 
 import nox
 
+PYTHON_VERSION = "3.12"
 PROJECT = "compaction"
 ROOT = pathlib.Path(__file__).parent
 
 
-@nox.session()
+@nox.session(python=PYTHON_VERSION, venv_backend="conda")
 def test(session: nox.Session) -> None:
     """Run the tests."""
     os.environ["WITH_OPENMP"] = "1"
@@ -34,7 +35,7 @@ def test(session: nox.Session) -> None:
         session.run("coverage", "report", "--ignore-errors", "--show-missing")
 
 
-@nox.session(name="test-cli")
+@nox.session(name="test-cli", python=PYTHON_VERSION, venv_backend="conda")
 def test_cli(session: nox.Session) -> None:
     """Test the command line interface."""
     session.install(".")
