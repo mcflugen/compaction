@@ -4,7 +4,7 @@ import sys
 import warnings
 from functools import partial
 from io import StringIO
-from typing import Optional, TextIO
+from typing import TextIO
 
 import click
 import numpy as np  # type: ignore
@@ -88,7 +88,7 @@ def _tomlkit_to_popo(d):
     return result
 
 
-def load_config(stream: Optional[TextIO] = None):
+def load_config(stream: TextIO | None = None):
     """Load compaction config file.
 
     Parameters

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["cython~=3.0.0b3", "numpy", "setuptools", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -19,7 +19,7 @@ keywords = [
   "numerical modeling",
   "sediment compaction",
 ]
-license = {file = "LICENSE.md"}
+license = {text = "MIT"}
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
@@ -43,13 +43,13 @@ dependencies = [
 	"tomlkit",
 	"scipy",
 ]
-dynamic = ["readme", "version"]
+dynamic = ["readme" , "version"]
 
 [project.urls]
 homepage = "https://github.com/mcflugen/compaction"
 documentation = "https://compaction.readthedocs.io"
 repository = "https://github.com/mcflugen/compaction"
-changelog = "https://github.com/mcflugen/compaction/blob/develop/CHANGES.rst"
+changelog = "https://github.com/mcflugen/compaction/blob/master/NEWS.md"
 
 [project.optional-dependencies]
 dev = ["nox"]
@@ -71,8 +71,11 @@ compaction = "compaction.cli:compaction"
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.setuptools.dynamic]
-readme = {file = ["README.md", "AUTHORS.md"]}
+readme = {file = ["README.md", "AUTHORS.md"], content-type="text/markdown"}
 version = {attr = "compaction._version.__version__"}
 
 [tool.pytest.ini_options]
