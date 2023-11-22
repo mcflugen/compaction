@@ -75,7 +75,7 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.dynamic]
-readme = {file = ["README.md", "AUTHORS.md"], content_type="text/markdown"}
+readme = {file = ["README.md", "AUTHORS.md"], content-type="text/markdown"}
 version = {attr = "compaction._version.__version__"}
 
 [tool.pytest.ini_options]
