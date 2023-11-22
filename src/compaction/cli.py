@@ -4,7 +4,7 @@ import sys
 import warnings
 from functools import partial
 from io import StringIO
-from typing import Optional, TextIO
+from typing import TextIO
 
 import click
 import numpy as np  # type: ignore
