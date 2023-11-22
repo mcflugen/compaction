@@ -9,14 +9,14 @@ Cite as,
 
 ```bibtex
 @article{bahr2001exponential,
-  title={Exponential approximations to compacted sediment porosity profiles},
-  author={Bahr, David B and Hutton, Eric WH and Syvitski, James PM and Pratson, Lincoln F},
-  journal={Computers \& Geosciences},
-  volume={27},
-  number={6},
-  pages={691--700},
-  year={2001},
-  publisher={Pergamon}
+title={Exponential approximations to compacted sediment porosity profiles},
+author={Bahr, David B and Hutton, Eric WH and Syvitski, James PM and Pratson, Lincoln F},
+journal={Computers \& Geosciences},
+volume={27},
+number={6},
+pages={691--700},
+year={2001},
+publisher={Pergamon}
 }
 ```
 
