@@ -15,7 +15,7 @@ def compact(
     porosity_max: float = 1.0,
     rho_void: float = 1000.0,
     gravity: float = g,
-    return_dz: Optional[np.ndarray] = None,
+    return_dz: np.ndarray | None = None,
 ) -> np.ndarray:
     """Compact a column of sediment.
 

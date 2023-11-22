@@ -88,7 +88,7 @@ def _tomlkit_to_popo(d):
     return result
 
 
-def load_config(stream: Optional[TextIO] = None):
+def load_config(stream: TextIO | None = None):
     """Load compaction config file.
 
     Parameters
