@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 import pandas  # type: ignore
 import tomlkit as toml  # type: ignore
 
-from .compaction import compact as _compact
+from compaction.compaction import compact as _compact
 
 out = partial(click.secho, bold=True, err=True)
 err = partial(click.secho, fg="red", err=True)
@@ -115,7 +115,7 @@ def load_config(stream: TextIO | None = None):
     }
     if stream is not None:
         try:
-            local_params = toml.parse(stream.read())["compaction"]
+            local_params = toml.parse(stream.read()).value["compaction"]
         except KeyError:
             local_params = {"constants": {}}
 

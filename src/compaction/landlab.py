@@ -2,7 +2,7 @@
 from landlab import Component  # type: ignore
 from scipy.constants import g  # type: ignore
 
-from .compaction import compact
+from compaction import compaction
 
 
 class Compact(Component):
@@ -100,7 +100,9 @@ class Compact(Component):
         dz = self._grid.event_layers.dz[-1::-1, :]
         porosity = self._grid.event_layers["porosity"][-1::-1, :]
 
-        porosity[:] = compact(dz, porosity, return_dz=dz, **self._compaction_params)
+        porosity[:] = compaction.compact(
+            dz, porosity, return_dz=dz, **self._compaction_params
+        )
 
         return self.grid
 

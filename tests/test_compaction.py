@@ -5,8 +5,8 @@ import numpy as np  # type: ignore
 import pandas  # type: ignore
 from pytest import approx, mark, raises  # type: ignore
 
-from compaction import compact
 from compaction.cli import load_config, run_compaction
+from compaction.compaction import compact
 
 
 def test_to_analytical() -> None:
@@ -52,13 +52,10 @@ def test_spatially_distributed() -> None:
 
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
-@mark.benchmark(group="compaction")
-def test_grid_size(benchmark, size) -> None:
+def test_grid_size(size) -> None:
     dz = np.full((size, 100), 1.0)
     phi = np.full((size, 100), 0.5)
     phi_new = compact(dz, phi, porosity_max=0.5)
-
-    phi_new = benchmark(compact, dz, phi, porosity_max=0.5)
 
     assert phi_new[0] == approx(phi[0])
     assert np.all(phi_new[1:] < phi[1:])
@@ -66,14 +63,12 @@ def test_grid_size(benchmark, size) -> None:
 
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
-@mark.benchmark(group="compaction-with-dz")
-def test_grid_size_with_dz(benchmark, size) -> None:
+def test_grid_size_with_dz(size) -> None:
     dz = np.full((size, 100), 1.0)
     phi = np.full((size, 100), 0.5)
-    phi_new = compact(dz, phi, porosity_max=0.5)
-
     dz_new = np.empty_like(dz)
-    phi_new = benchmark(compact, dz, phi, porosity_max=0.5, return_dz=dz_new)
+
+    phi_new = compact(dz, phi, porosity_max=0.5, return_dz=dz_new)
 
     assert phi_new[0] == approx(phi[0])
     assert np.all(phi_new[1:] < phi[1:])

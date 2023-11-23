@@ -4,7 +4,7 @@ from landlab import RasterModelGrid  # type: ignore
 from numpy.testing import assert_array_almost_equal  # type: ignore
 from pytest import approx, fixture, mark, raises  # type: ignore
 
-import compaction
+from compaction import compaction
 from compaction.landlab import Compact
 
 
@@ -34,14 +34,13 @@ def test_init_without_layers_added(grid):
 
 
 @mark.parametrize("size", (10, 100, 1000, 10000))
-@mark.benchmark(group="landlab")
-def test_grid_size(benchmark, size):
+def test_grid_size(size):
     grid = RasterModelGrid((3, 101))
     for _ in range(size):
         grid.event_layers.add(1.0, porosity=0.5)
 
     compact = Compact(grid, porosity_min=0.0, porosity_max=0.5)
-    benchmark(compact.calculate)
+    compact.calculate()
 
     assert np.all(grid.event_layers["porosity"][:-1] < 0.5)
     assert grid.event_layers["porosity"][-1] == approx(0.5)

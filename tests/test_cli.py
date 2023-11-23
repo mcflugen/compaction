@@ -8,7 +8,8 @@ import tomlkit  # type: ignore
 from click.testing import CliRunner
 from numpy.testing import assert_array_almost_equal  # type: ignore
 
-from compaction import cli, compact
+from compaction import cli
+from compaction.compaction import compact
 
 
 def test_command_line_interface():
