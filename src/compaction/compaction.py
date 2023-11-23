@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+from __future__ import annotations
+
 import numpy as np  # type: ignore
 from scipy.constants import g  # type: ignore
 

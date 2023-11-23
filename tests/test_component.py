@@ -4,7 +4,7 @@ from landlab import RasterModelGrid  # type: ignore
 from numpy.testing import assert_array_almost_equal  # type: ignore
 from pytest import approx, fixture, mark, raises  # type: ignore
 
-import compaction
+from compaction import compaction
 from compaction.landlab import Compact
 
 
