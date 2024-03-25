@@ -1,4 +1,5 @@
 """Unit tests for compaction."""
+
 from io import StringIO
 
 import numpy as np  # type: ignore

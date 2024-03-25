@@ -1,4 +1,5 @@
 """Unit tests for compaction landlab component."""
+
 import numpy as np  # type: ignore
 from landlab import RasterModelGrid  # type: ignore
 from numpy.testing import assert_array_almost_equal  # type: ignore
