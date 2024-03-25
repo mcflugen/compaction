@@ -1,4 +1,5 @@
 """Compact layers of sediment due to overlying load."""
+
 from landlab import Component  # type: ignore
 from scipy.constants import g  # type: ignore
 
