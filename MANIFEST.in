@@ -1,5 +1,6 @@
 include .coveragerc
 include .pre-commit-config.yaml
+include CITATION.cff
 include LICENSE.md
 include NEWS.md
 include asv.conf.json
