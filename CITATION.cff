@@ -1,0 +1,28 @@
+# YAML 1.2
+cff-version: 1.2.0
+title: compaction
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+abstract: >-
+  Compact columns of layered sediment following the numerical
+  solution described in Bahr et al., 2001.
+type: software
+authors:
+  - given-names: Eric
+    family-names: Hutton
+    email: mcflugen@gmail.com
+    affiliation: University of Colorado
+    orcid: 'https://orcid.org/0000-0002-5864-6459'
+repository-code: "https://github.com/mcflugen/compaction"
+url: "https://github.com/mcflugen/compaction/blob/master/README.md"
+date-released: "2022-06-26"
+keywords:
+  - "bmi"
+  - "component modeling"
+  - "earth science"
+  - "landlab"
+  - "model coupling"
+  - "numerical modeling"
+  - "sediment compaction"
+license: MIT
